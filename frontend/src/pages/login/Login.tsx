@@ -3,7 +3,8 @@
 import Button from "../../components/buttons/Button";
 import { Link } from 'react-router-dom';
 import '../../index.css';
-import FormField from "../../components/Form";
+import FormField from "../../components/Form-Field";
+import FormHeader from "../../components/Form-Header";
 
 export default function Register() {
     // const [username, setUsername] = useState('');
@@ -20,10 +21,7 @@ export default function Register() {
                     <div className="absolute top-4 right-4 w-16 h-16 rounded-full overflow-hidden">
                         {/* <img src="image2-url" alt="Image 2" /> */}
                     </div>
-                    <div className="text-center mb-6">
-                        <h1 className="text-4xl font-bold text-white">GirAngir</h1>
-                        <p className="text-gray-400 mt-2">Learn, Write, Remember, Repeat</p>
-                    </div>
+                    <FormHeader title="GirAngir" subTitle="Learn, Write, Remember, Repeat" />
                     <form className="space-y-4">
                         <FormField
                             id="email"
@@ -32,8 +30,8 @@ export default function Register() {
                             type="email"
                             autoComplete="email"
                             required
-                            placeholder="Enter your email" children={undefined}>
-                        </FormField>
+                            placeholder="Enter your email" children={undefined}
+                        />
                         <FormField
                             id="password"
                             label="Password"
@@ -41,9 +39,8 @@ export default function Register() {
                             type="password"
                             autoComplete="current-password"
                             required
-                            placeholder="Enter your password" children={undefined}>
-
-                        </FormField>
+                            placeholder="Enter your password" children={undefined}
+                        />
                         <div>
                             <div className="flex justify-between items-center mb-6">
                                 <div className="flex items-center">

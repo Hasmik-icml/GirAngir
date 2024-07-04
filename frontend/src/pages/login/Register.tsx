@@ -2,6 +2,9 @@
 // import { Link } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import '../../index.css';
+import FormHeader from '../../components/Form-Header';
+import FormField from '../../components/Form-Field';
+import Button from '../../components/buttons/Button';
 
 export default function Register() {
   // const [username, setUsername] = useState('');
@@ -18,54 +21,40 @@ export default function Register() {
           <div className="absolute top-4 right-4 w-16 h-16 rounded-full overflow-hidden">
             {/* <img src="image2-url" alt="Image 2" /> */}
           </div>
-          <div className="text-center mb-6">
-            <h1 className="text-4xl font-bold text-white">GirAngir</h1>
-            <p className="text-gray-400 mt-2">Create your account to start building your own encyclopedia</p>
-          </div>
+          <FormHeader title='GirAngir' subTitle='Create your account to start building your own encyclopedia' />
           <form className="space-y-4">
+            <FormField
+              id="username"
+              label='Username'
+              name="username"
+              type="username"
+              autoComplete="username"
+              required
+              placeholder="Enter your name"
+              children={undefined}
+            />
+            <FormField
+              id="email"
+              label='Email'
+              name="email"
+              type="email"
+              autoComplete="email"
+              required
+              placeholder="Enter your email"
+              children={undefined}
+            />
+            <FormField
+              id="password"
+              label='Password'
+              name="password"
+              type="password"
+              autoComplete="current-password"
+              required
+              placeholder="Enter your password"
+              children={undefined}
+            />
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-300">Username</label>
-              <input
-                id="username"
-                name="username"
-                type="username"
-                autoComplete="username"
-                required
-                className="mt-1 p-3 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm text-gray-300 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                placeholder="Enter your name"
-              />
-            </div>
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-300">Email</label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                className="mt-1 p-3 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm text-gray-300 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                placeholder="Enter your email"
-              />
-            </div>
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-300">Password</label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="current-password"
-                required
-                className="mt-1 p-3 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm text-gray-300 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                placeholder="Enter your password"
-              />
-            </div>
-            <div>
-              <button
-                type="submit"
-                className="w-full py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              >
-                Sign Up
-              </button>
+              <Button type="submit">Sign Up</Button>
             </div>
           </form>
 
