@@ -6,7 +6,7 @@ import '../../index.css';
 import FormField from "../../components/Form-Field";
 import FormHeader from "../../components/Form-Header";
 
-export default function Register() {
+export default function ResetPassword() {
     // const [password, setpassword] = useState('');
 
     return (
@@ -19,7 +19,7 @@ export default function Register() {
                     <div className="absolute top-4 right-4 w-16 h-16 rounded-full overflow-hidden">
                         {/* <img src="image2-url" alt="Image 2" /> */}
                     </div>
-                    <FormHeader title="GirAngir" subTitle="Learn, Write, Remember, Repeat" />
+                    <FormHeader title="GirAngir" subTitle="Reset password" />
                     <form className="space-y-4">
                     <FormField
                             id="password"
