@@ -11,10 +11,12 @@ services:
       - ./backend/.env
     environment:
       DATABASE_URL: ${DATABASE_URL}
+    command: nodemon --legacy-watch src/server.ts    
     depends_on:
       - db
+      # Docker Compose ֆայլի volumes-ը ապահովում է, որ լոկալ ֆայլերը անմիջապես կապված լինեն Docker կոնտեյների հետ։ 
     volumes:
-      - ./backend:/app
+      - ./backend:/app # Սա կապում է լոկալ backend ֆոլդերը Docker կոնտեյների հետ
       - /app/node_modules
 
   frontend:
@@ -27,9 +29,8 @@ services:
       - "5173:8080"
     # env_file:
     #   - ./frontend/.env
-    # volumes:
-    #   - ./frontend/public:/usr/share/nginx/html
-      # - /app/node_modules
+    volumes:
+    - ./frontend:/app
 
   db:
     image: postgres:13

@@ -1,56 +1,56 @@
 // import { useState } from 'react';
 // import { Link } from 'react-router-dom';
 import { Link, useNavigate } from 'react-router-dom';
-import '../../index.css';
 import FormHeader from '../../components/Form-Header';
 import FormField from '../../components/Form-Field';
 import Button from '../../components/buttons/Button';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import '../../index.css';
+import { validateEmail, validateName, validatePassword } from '../../utils/validation';
 
 export default function Register() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [nameError, setNameError] = useState('');
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const [backendError, setBackendError] = useState('');
+  const [isBackendError, setIsBackendError] = useState(false);
+
   const history = useNavigate();
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const clearBackendError = () => {
+    setBackendError('');
+    setIsBackendError(false);
+  }
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setName(e.target.value);
+    if (nameError) setNameError('');
+    clearBackendError();
   };
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
+    if (emailError) setEmailError('');
+    clearBackendError();
   };
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
+    if (passwordError) setPasswordError('');
+    clearBackendError();
   };
-
-  const validateEmail = (email: string): string => {
-    const re = /\S+@\S+\.\S+/;
-    return re.test(email) ? '' : 'Invalid email or password';
-  };
-
-  const validatePassword = (password: string): string => {
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
-    if (!passwordRegex.test(password)) {
-      return 'Password must be at least 8 characters long, contain at least one lowercase letter, one uppercase letter, and one number';
-    }
-    return '';
-  }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    const emailValidationError = validateEmail(email);
-    const passwordValidationError = validatePassword(password);
-    setEmailError(emailValidationError);
-    setPasswordError(passwordValidationError);
-
-    if (emailValidationError && passwordValidationError) {
-      return;
-    }
+    setIsBackendError(false);
 
     try {
       const response = await fetch("http://localhost:3010/auth/signup", {
@@ -61,26 +61,66 @@ export default function Register() {
         body: JSON.stringify({ email, password, name })
 
       });
-
-      if (!response) {
-        throw new Error('Network response was not ok');
+      console.log(333, response);
+      if (!response.ok) {
+        const errorData = await response.json();
+        setBackendError(errorData.errors[0].message);
+        setIsBackendError(true);
+        throw new Error(errorData.errors[0].message);
       }
 
-      const data = response;
+      const data = await response.json();;
       console.log("data", data);
 
-      if (data.ok) {
-        history('/dashboard');
-      } else {
-        setEmailError('Invalid email or password');
-        setPasswordError('Invalid email or password');
+      if (data) {
+        history('/login');
       }
 
     } catch (error) {
       console.error('There was a problem with the fetch operation:', error);
-      alert('An error occurred. Please try again.');
+      const errorMessage = error instanceof Error ? error.message : String(error);
+
+      setBackendError(String(errorMessage));
+      setIsBackendError(true);
     }
   };
+
+  useEffect(() => {
+    if (!isBackendError) {
+      const nameValidationError = validateName(name);
+
+      if (name === '') {
+        setNameError('');
+      } else {
+        setNameError(nameValidationError);
+      }
+    }
+  }, [name, isBackendError]);
+
+  useEffect(() => {
+    if (!isBackendError) {
+      const emailValidationError = validateEmail(email);
+
+      if (email === '') {
+        setEmailError('');
+      } else {
+        setEmailError(emailValidationError);
+      }
+    }
+  }, [email, isBackendError]);
+
+  useEffect(() => {
+    if (!isBackendError) {
+      const passwordValidationError = validatePassword(password);
+
+      if (password === '') {
+        setPasswordError('');
+      } else {
+        setPasswordError(passwordValidationError);
+      }
+    }
+  }, [password, isBackendError]);
+
   return (
     <>
       <div className="flex items-center justify-center min-h-screen bg-gray-900">
@@ -119,16 +159,22 @@ export default function Register() {
               id="password"
               label='Password'
               name="password"
-              type="password"
+              type={showPassword ? "text" : "password"}
               autoComplete="current-password"
               required
               placeholder="Enter your password"
               children={undefined}
               onChange={handlePasswordChange}
             />
+            <div className="flex justify-between items-center mb-6">
+              <div className="flex items-center">
+                <input type="checkbox" id="show-password" checked={showPassword} onChange={togglePasswordVisibility} className="mr-2" />
+                <label htmlFor="show-password" className="text-gray-400">Show password</label>
+              </div>
+            </div>
             <div>
               <Button type="submit">Sign Up</Button>
-              {(emailError || passwordError) && <p className="text-red-500 text-sm">{emailError}</p>}
+              {(backendError || nameError || emailError || passwordError) && <p className="text-red-500 text-sm">{backendError || nameError || emailError || passwordError}</p>}
             </div>
           </form>
 
