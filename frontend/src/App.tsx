@@ -7,6 +7,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './index.css';
 import ForgotPassword from './pages/login/Forgot-Password';
 import ResetPassword from './pages/login/Reset-Password';
+import Dashboard from "./pages/home/Dashboard";
 
 export default function App() {
   return (
@@ -16,6 +17,7 @@ export default function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/" element={<Dashboard />} />
 
         {/* <Route path="/home" element={<Home />} /> */}
       </Routes>

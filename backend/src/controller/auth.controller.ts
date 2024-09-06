@@ -20,6 +20,7 @@ export class AuthController {
 
     public static async signIn(req: Request, res: Response): Promise<void> {
         const { email, password } = req.body;
+        console.log("back")
         try {
             const tokens = await AuthService.signIn(email, password);
             if (tokens) {
