@@ -2,6 +2,7 @@ import { Router } from "express";
 import { body } from "express-validator";
 import { validateRequest } from "../middleware/validation.middleware";
 import { AuthController } from "../controller/auth.controller";
+import { authMiddleware } from "../middleware/auth.middleware";
 
 const router: Router = Router();
 
@@ -31,5 +32,22 @@ router
         validateRequest,
         AuthController.signUp
     )
+    .post('/signin',
+        [
+            body('email').trim().escape().isEmail().withMessage("Invalid email or password"),
+            body('password')
+                .trim()
+                .isStrongPassword({
+                    minLength: 8,
+                    minLowercase: 1,
+                    minUppercase: 1,
+                    minNumbers: 1,
+                    minSymbols: 1
+                }).withMessage("Invalide email or password"),
+        ],
+        validateRequest,
+        AuthController.signIn
+    )
+    .post('/refresh-token', AuthController.refreshToken)
 
-    export { router  as authRouter };
+export { router as authRouter };
