@@ -23,6 +23,7 @@ model User {
   updatedAt DateTime @updatedAt
 
   tokens RefreshToken[]
+  words Word[]
 }
 
 model RefreshToken {
@@ -30,6 +31,35 @@ model RefreshToken {
   token     String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  user   User   @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+}
+
+model Word {
+  id       String   @id @default(uuid())
+  text     String
+  language Language @relation(fields: [languageId], references: [id])
+  languageId String
+  user User @relation(fields: [userId], references: [id])
   userId String
+  translationsFrom Translation[] @relation("WordTranslationsFrom")
+  translationsTo   Translation[] @relation("WordTranslationsTo")
+}
+
+model Language {
+  id   String @id @default(uuid())
+  name String @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  wors Word[]
+}
+
+model Translation {
+  id String @id @default(uuid())
+  wordFrom Word @relation("WordTranslationsFrom", fields: [wordFromId], references: [id])
+  wordFromId String
+  wordTo Word @relation("WordTranslationsTo", fields: [wordToId], references: [id])
+  wordToId String
 }
