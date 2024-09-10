@@ -24,7 +24,12 @@ export class AuthController {
         try {
             const tokens = await AuthService.signIn(email, password);
             if (tokens) {
-                res.cookie('refreshToken', tokens.refreshToken, { httpOnly: true, maxAge: 1 * 24 * 60 * 60 * 1000 });
+                res.cookie('refreshToken', tokens.refreshToken, {
+                    httpOnly: true,
+                    secure: true,
+                    sameSite: 'strict',
+                    maxAge: 1 * 24 * 60 * 60 * 1000
+                });
                 res.status(200).send({ accessToken: tokens?.accessToken });
             } else {
                 res.status(401).json({ message: 'Invalid email or password' });
