@@ -6,6 +6,8 @@ import { validateRequest } from "../middleware/validation.middleware";
 
 const router: Router = Router();
 
+router.use(authMiddleware);
+
 router
     .post("/create",
         [
@@ -15,12 +17,10 @@ router
                 .escape(),
         ],
         validateRequest,
-        authMiddleware,
         LanguageController.createNewLanguage,
     )
     .get("/all-languages",
         validateRequest,
-        authMiddleware,
         LanguageController.getAllLanguages,
     )
     .put("/edit/:id",
@@ -31,12 +31,10 @@ router
                 .escape(),
         ],
         validateRequest,
-        authMiddleware,
         LanguageController.upadateLanguage,
     )
     .delete("/:id",
         validateRequest,
-        authMiddleware,
         LanguageController.deleteLanguage,
     )
 export { router as languageRouter };
