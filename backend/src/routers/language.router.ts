@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { body } from "express-validator";
+import { body, param } from "express-validator";
 import { authMiddleware } from "../middleware/auth.middleware";
 import { LanguageController } from "../controller/language.controller";
 import { validateRequest } from "../middleware/validation.middleware";
@@ -34,6 +34,11 @@ router
         LanguageController.upadateLanguage,
     )
     .delete("/:id",
+        [
+            param("id")
+                .notEmpty().withMessage("Id must be provided")
+                .isUUID().withMessage("Id must be UUID"),
+        ],
         validateRequest,
         LanguageController.deleteLanguage,
     )
