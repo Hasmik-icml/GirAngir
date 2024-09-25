@@ -22,8 +22,9 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  tokens RefreshToken[]
-  words Word[]
+  tokens      RefreshToken[]
+  words       Vocabulary[]
+  translation Translation[]
 }
 
 model RefreshToken {
@@ -35,31 +36,36 @@ model RefreshToken {
   userId    String
 }
 
-model Word {
-  id       String   @id @default(uuid())
-  text     String
-  language Language @relation(fields: [languageId], references: [id])
-  languageId String
-  user User @relation(fields: [userId], references: [id])
-  userId String
+model Vocabulary {
+  id               String        @id @default(uuid())
+  content          String
+  language         Language      @relation(fields: [languageId], references: [id])
+  languageId       String
+  user             User          @relation(fields: [userId], references: [id])
+  userId           String
   translationsFrom Translation[] @relation("WordTranslationsFrom")
   translationsTo   Translation[] @relation("WordTranslationsTo")
+  // @@map("Entry")
+
+  @@unique([content, languageId, userId])
 }
 
 model Language {
-  id   String @id @default(uuid())
-  name String @unique
+  id        String    @id @default(uuid())
+  name      String    @unique
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
-  wors Word[]
+  words Vocabulary[]
 }
 
 model Translation {
-  id String @id @default(uuid())
-  wordFrom Word @relation("WordTranslationsFrom", fields: [wordFromId], references: [id])
-  wordFromId String
-  wordTo Word @relation("WordTranslationsTo", fields: [wordToId], references: [id])
-  wordToId String
+  id            String     @id @default(uuid())
+  contentFrom   Vocabulary @relation("WordTranslationsFrom", fields: [contentFromId], references: [id])
+  contentFromId String
+  contentTo     Vocabulary @relation("WordTranslationsTo", fields: [contentToId], references: [id])
+  contentToId   String
+  user          User       @relation(fields: [userId], references: [id])
+  userId        String
 }
