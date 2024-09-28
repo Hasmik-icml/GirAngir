@@ -38,26 +38,18 @@ router
         [
             query('page').optional().isInt({ min: 1 }).withMessage('Page must be a positive integer'),
             query('limit').optional().isInt({ min: 1 }).withMessage('Limit must be a positive integer'),
-            query('orderBy').optional().isIn(['id', 'createdAt', 'updatedAt', 'language']).withMessage('Order must be "id", "createdAt", "updatedAt", "language"'),
+            query('orderBy').optional().isIn(['id', 'createdAt', 'updatedAt', 'languageId', 'content']).withMessage('Order must be "id", "createdAt", "updatedAt", "language"'),
+            query('content').optional().isString().withMessage('Content must be a string'),
         ],
         validateRequest,
         VocabularyController.getAllContents
     )
-    .put("/edit/:id",
+    .put("/edit/:contentId",
         [
             body("content")
                 .optional()
                 .isString().withMessage("Content must be string")
                 .escape(),
-            body("languageId")
-                .optional()
-                .isUUID().withMessage("LanguageId must be UUID"),
-            body("translations-from")
-                .optional()
-                .isUUID().withMessage("IdFrom must be UUID"),
-            body("translations-to")
-                .optional()
-                .isUUID().withMessage("IdTo must be UUID"),
         ],
         validateRequest,
         VocabularyController.updateContent
