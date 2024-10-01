@@ -1,5 +1,5 @@
 import { Language, Prisma, PrismaClient, Vocabulary } from '@prisma/client';
-import translationPairs from '../helpers/translation-pairs.helper';
+import { TranslationPairs } from '../helpers/translation-pairs.helper';
 import { NotFoundError } from '../handlers/not-found.handler';
 
 export interface IOrderParams {
@@ -41,27 +41,50 @@ export class VocabularyService {
         }
     }
 
-    public static async translation(contentIds: number[], userId: string): Promise<string[]> {
-        const createdTranslationId = [];
+    public static async translation(contentIds: string[], userId: string): Promise<string[]> {
         try {
-            const translation = translationPairs(contentIds);
+            const existingPairs = (await this.translationRepo.findMany({
+                where: {
+                    userId,
+                    deletedAt: null,
+                },
+                select: {
+                    id: true,
+                    contentFromId: true,
+                    contentToId: true,
+                }
+            })).map(pairs => [pairs.id, pairs.contentFromId, pairs.contentToId]);
+            
+            const newPairs = TranslationPairs.newPairs(contentIds);
+            const pairsToRemove = TranslationPairs.pairsToRemove(newPairs, existingPairs);
+            const pairsToCreate = TranslationPairs.pairsToCreate(newPairs, existingPairs);
 
-            for (const [contentFromId, contentToId] of translation) {
-                const createdTranslation = await this.translationRepo.create({
-                    data: {
-                        contentFrom: {
-                            connect: { id: String(contentFromId) }
-                        },
-                        contentTo: {
-                            connect: { id: String(contentToId) }
-                        },
+            if (pairsToRemove.length) {
+                await this.delete(pairsToRemove, userId);
+            }
+
+            const upsertOperations = pairsToCreate.map(([contentFromId, contentToId]) => {
+                return this.translationRepo.upsert({
+                    where: {
+                        contentFromId_contentToId_userId: {
+                            contentFromId,
+                            contentToId,
+                            userId
+                        }
+                    },
+                    create: {
+                        contentFrom: { connect: { id: contentFromId } },
+                        contentTo: { connect: { id: contentToId } },
                         user: { connect: { id: userId } },
+                    },
+                    update: {
+                        deletedAt: null,
                     }
                 });
-                createdTranslationId.push(createdTranslation.id);
-            }
-            console.log(11, createdTranslationId)
-            return createdTranslationId;
+            })
+            const createdTranslations = await Promise.all(upsertOperations);
+
+            return createdTranslations.map(translation => translation.id);
         } catch (error) {
             console.log(555, error);
 
@@ -133,6 +156,26 @@ export class VocabularyService {
             });
 
             return updatedContent;
+        } catch (error) {
+            if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
+                throw new NotFoundError('Content not found');
+            }
+            throw new Error('Error updating Blog');
+        }
+
+    }
+
+    public static async delete(pairsToRemove: (number | string)[][], userId: string): Promise<void> {
+        try {
+            const ids = pairsToRemove.map(pair => String(pair[0]));
+
+            await this.translationRepo.updateMany({
+                where: { id: { in: ids } },
+                data: {
+                    deletedAt: new Date()
+                }
+
+            });
         } catch (error) {
             if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
                 throw new NotFoundError('Content not found');
