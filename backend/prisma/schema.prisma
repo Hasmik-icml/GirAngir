@@ -26,6 +26,7 @@ model User {
   tokens      RefreshToken[]
   words       Vocabulary[]
   translation Translation[]
+  Language    Language[]
 }
 
 model RefreshToken {
@@ -61,8 +62,13 @@ model Language {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
+  isNative  Boolean   @default(false)
 
-  words Vocabulary[]
+  words  Vocabulary[]
+  user   User         @relation(fields: [userId], references: [id])
+  userId String
+
+  @@unique([name, userId])
 }
 
 model Translation {
@@ -77,4 +83,6 @@ model Translation {
   contentToId   String
   user          User       @relation(fields: [userId], references: [id])
   userId        String
+
+  @@unique([contentFromId, contentToId, userId])
 }
