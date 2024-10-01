@@ -28,7 +28,7 @@ router
                 .notEmpty().withMessage("Content must be provided")
                 .isArray().withMessage("Content must be Array")
                 .custom((value) => {
-                    return Array.isArray(value) && value.every(Number.isInteger);
+                    return Array.isArray(value) && value.every(String);
                 }),
         ],
         validateRequest,
