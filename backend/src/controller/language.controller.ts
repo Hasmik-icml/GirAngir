@@ -6,9 +6,11 @@ import { CustomError } from "../errors/custom.error";
 
 export class LanguageController {
     public static async createNewLanguage(req: Request, res: Response) {
-        const { name } = req.body
+        const { name } = req.body;
+        const userId = (req as any).userId;
+
         try {
-            const languageCreated: Language = await LanguageService.create(name);
+            const languageCreated: Language = await LanguageService.create(name, userId);
             res.status(200).send(languageCreated);
         } catch (error) {
             if (error instanceof CustomError) {

@@ -9,10 +9,10 @@ export class LanguageService {
         return this.prismaclient.language;
     }
 
-    public static async create(name: string): Promise<Language> {
+    public static async create(name: string, userId: string): Promise<Language> {
         try {
             const language = await this.repo.create({
-                data: { name },
+                data: { name, userId },
             })
             if (!language) {
                 throw new Error("error");
