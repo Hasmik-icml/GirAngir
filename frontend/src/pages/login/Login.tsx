@@ -14,11 +14,16 @@ export default function Login() {
     const [showPassword, setShowPassword] = useState(false);
     const [backendError, setBackendError] = useState('');
     const [isBackendError, setIsBackendError] = useState(false);
+    const [rememberMe, setRememberMe] = useState(true);
 
     const history = useNavigate();
 
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
+    }
+
+    const handleRememberMe = () => {
+        setRememberMe(!rememberMe);
     }
 
     const clearBackendError = () => {
@@ -59,6 +64,12 @@ export default function Login() {
         console.log("111", emailValidationError, passwordValidationError);
         setEmailError(emailValidationError);
         setPasswordError(passwordValidationError);
+
+        if (rememberMe) {
+            localStorage.setItem('email', email);
+        } else {
+            localStorage.removeItem('email');
+        }
 
         const tryLogin = (email: string, password: string) => {
             return fetch("http://localhost:3010/auth/signin", {
@@ -120,6 +131,14 @@ export default function Login() {
         }
     }, [password, isBackendError]);
 
+    useEffect(() => {
+        const rememberedEmail = localStorage.getItem('email');
+        if (rememberedEmail) {
+            setEmail(rememberedEmail);
+            setRememberMe(true);
+        }
+    }, []);
+
     return (
         <>
             <div className="flex items-center justify-center min-h-screen bg-gray-900">
@@ -163,7 +182,7 @@ export default function Login() {
                         <div>
                             <div className="flex justify-between items-center mb-6">
                                 <div className="flex items-center">
-                                    <input type="checkbox" id="remember" className="mr-2" />
+                                    <input type="checkbox" id="remember" checked={rememberMe} onChange={handleRememberMe} className="mr-2" />
                                     <label htmlFor="remember" className="text-gray-400">Remember me</label>
                                 </div>
                                 <Link to="/forgot-password" className="text-indigo-500 hover:text-indigo-400">
