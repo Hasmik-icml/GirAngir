@@ -8,11 +8,13 @@ import './index.css';
 import ForgotPassword from './pages/login/Forgot-Password';
 import ResetPassword from './pages/login/Reset-Password';
 import Dashboard from "./pages/home/Dashboard";
+import Welcome from './pages/welcome/Welcome';
 
 export default function App() {
   return (
     <Router>
       <Routes>
+        <Route path="/" element={<Welcome />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
