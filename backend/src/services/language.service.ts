@@ -26,11 +26,11 @@ export class LanguageService {
         }
     }
 
-    public static async getAll(): Promise<[Language[], count: number]> {
+    public static async getAll(userId: string): Promise<[Language[], count: number]> {
         try {
             const [languages, count] = await this.prismaclient.$transaction([
-                this.repo.findMany({ where: { deletedAt: null } }),
-                this.repo.count({ where: { deletedAt: null } }),
+                this.repo.findMany({ where: { deletedAt: null, userId } }),
+                this.repo.count({ where: { deletedAt: null, userId } }),
             ]);
 
             return [languages, count];

@@ -22,8 +22,9 @@ export class LanguageController {
     }
 
     public static async getAllLanguages(req: Request, res: Response) {
+        const userId = (req as any).userId;
         try {
-            const [languages, count] = await LanguageService.getAll();
+            const [languages, count] = await LanguageService.getAll(userId);
             res.status(200).send({ languages, count });
         } catch (error) {
             res.status(500).json({ error });
