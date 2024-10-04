@@ -2,15 +2,15 @@ services:
   backend:
     restart: always
     container_name: girangir-back
-    build: 
+    build:
       context: ./backend
       dockerfile: Dockerfile
     ports:
       - "3010:3000"
     env_file:
-      - ./backend/.env
+      - ./.env
     environment:
-      DATABASE_URL: ${DATABASE_URL}
+      - DATABASE_URL=${DATABASE_URL}
     depends_on:
       - db
       # Docker Compose ֆայլի volumes-ը ապահովում է, որ լոկալ ֆայլերը անմիջապես կապված լինեն Docker կոնտեյների հետ։ 
@@ -29,18 +29,17 @@ services:
     # env_file:
     #   - ./frontend/.env
     volumes:
-    - ./frontend:/app
+      - ./frontend:/app
 
   db:
     image: postgres:13
     container_name: girangir-db
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
     env_file:
-      - ./backend/.env
-        # required: "true"
+      - ./.env
     ports:
       - "5432:5432"
     volumes:
