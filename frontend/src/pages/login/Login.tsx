@@ -72,7 +72,7 @@ export default function Login() {
         }
 
         const tryLogin = (email: string, password: string) => {
-            return fetch(`${process.env.API_URL}/auth/signin`, {
+            return fetch(`${import.meta.env.VITE_API_URL}/auth/signin`, {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json',
