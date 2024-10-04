@@ -47,7 +47,7 @@ export default function MainContent() {
         e.preventDefault();
 
         const token = localStorage.getItem('accesToken');
-        const createNewLanguage = await fetch('http://localhost:3010/languages/create', {
+        const createNewLanguage = await fetch(`${process.env.API_URL}/languages/create`, {
             method: "POST",
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -95,7 +95,7 @@ export default function MainContent() {
             const fetchData = async () => {
                 try {
                     const [vocabularyResponse, languagesResponse] = await Promise.all([
-                        fetch('http://localhost:3010/vocabulary/all', {
+                        fetch(`${process.env.API_URL}/vocabulary/all`, {
                             method: "GET",
                             headers: {
                                 'Authorization': `Bearer ${token}`,
@@ -103,7 +103,7 @@ export default function MainContent() {
                             },
                         }),
 
-                        fetch('http://localhost:3010/languages/all-languages', {
+                        fetch(`${process.env.API_URL}/languages/all-languages`, {
                             method: "GET",
                             headers: {
                                 'Authorization': `Bearer ${token}`,
