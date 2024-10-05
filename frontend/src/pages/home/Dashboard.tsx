@@ -1,12 +1,12 @@
-import MainContent from "../../components/dashboard/Main-Content";
 import Sidebar from "../../components/dashboard/Side-Bar";
+import Vocabulary from "../../components/dashboard/Vocabulary";
 
 export default function Dashboard() {
     return (
         <>
             <div className="flex">
                 <Sidebar />
-                <MainContent />
+                <Vocabulary />
             </div>
         </>
     )
