@@ -88,7 +88,7 @@ export default function Login() {
 
         const proceedToDashboard = async (response: Response) => {
             const data = await response.json();
-            localStorage.setItem("accesToken", data.accessToken);
+            localStorage.setItem("accessToken", data.accessToken);
             history("/dashboard");
         };
 
