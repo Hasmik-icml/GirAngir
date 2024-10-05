@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import Button from "../buttons/Button";
 import FormHeader from "../Form-Header";
 import FormField from "../Form-Field";
+import { fetchWithAuth } from "../../utils/api";
 
-export default function MainContent() {
+export default function Vocabulary() {
 
     interface Language {
         id: string;
@@ -46,13 +47,8 @@ export default function MainContent() {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        const token = localStorage.getItem('accesToken');
-        const createNewLanguage = await fetch(`${import.meta.env.VITE_API_URL}/languages/create`, {
+        const createNewLanguage = await fetchWithAuth(`${import.meta.env.VITE_API_URL}/languages/create`, {
             method: "POST",
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
             body: JSON.stringify({
                 "name": newLanguage
             })
@@ -89,26 +85,15 @@ export default function MainContent() {
 
     useEffect(() => {
         // Fetch request for data
-        const token = localStorage.getItem('accesToken');
-
-        if (token) {
             const fetchData = async () => {
                 try {
                     const [vocabularyResponse, languagesResponse] = await Promise.all([
-                        fetch(`${import.meta.env.VITE_API_URL}/vocabulary/all`, {
+                        fetchWithAuth(`${import.meta.env.VITE_API_URL}/vocabulary/all`, {
                             method: "GET",
-                            headers: {
-                                'Authorization': `Bearer ${token}`,
-                                'Content-Type': 'application/json',
-                            },
                         }),
 
-                        fetch(`${import.meta.env.VITE_API_URL}/languages/all-languages`, {
+                        fetchWithAuth(`${import.meta.env.VITE_API_URL}/languages/all-languages`, {
                             method: "GET",
-                            headers: {
-                                'Authorization': `Bearer ${token}`,
-                                'Content-Type': 'application/json',
-                            },
                         })
                     ]);
 
@@ -122,14 +107,9 @@ export default function MainContent() {
                 }
             };
             fetchData();
-        } else {
-            console.log('No token found');
-        }
+
     }, [languages]);
 
-    // const maxRows = Math.max(
-    //     ...languages.map((language) => vocabulary?.data[language.name]?.length || 0 : 0)
-    // );
     const maxRows = Math.max(
         ...languages.map((language) => language?.name ? vocabulary?.data[language.name]?.length || 0 : 0)
     );
@@ -190,48 +170,50 @@ export default function MainContent() {
             )}
 
             {/* Table */}
-            <table className="min-w-full table-auto border-collapse border border-gray-300">
-                <thead>
-                    <tr>
-                        {languages.length > 0 && languages.map((language) => (
-                            <td key={language?.id} className="border border-gray-300 px-4 py-2">
-                                <input
-                                    type="text"
-                                    value={languageContent}
-                                    onChange={(e) => setLanguageContent(e.target.value)}
-                                    className="border border-gray-400 px-2 py-1 w-full"
-                                    placeholder={`Enter ${language?.name} content`}
-                                />
-                            </td>
-                        ))}
-                    </tr>
-                </thead>
-                <tbody>
-                    {Array.from({ length: maxRows }).map((_, rowIndex) => (
-                        <tr key={rowIndex}>
-                            {languages.map((language) => {
-                                const content = vocabulary?.data[language?.name]?.[rowIndex]?.content;
-
-                                return (
-                                    <td key={language?.id} className="border border-gray-300 px-4 py-2">
-                                        <div>
-                                            {content ? (
-                                                <>
-                                                    <input type="checkbox" className="mr-2" />
-                                                    {content}
-                                                </>
-                                            ) : ''
-                                            }
-
-                                        </div>
-                                    </td>
-                                )
-                            })}
+            <div className="table-container max-w-full overflow-x-auto">
+                <table className="min-w-full table-auto border-collapse border border-gray-300">
+                    <thead>
+                        <tr>
+                            {languages.length > 0 && languages.map((language) => (
+                                <td key={language?.id} className="border border-gray-300 px-4 py-2">
+                                    <input
+                                        type="text"
+                                        value={languageContent}
+                                        onChange={(e) => setLanguageContent(e.target.value)}
+                                        className="border border-gray-400 px-2 py-1 w-full"
+                                        placeholder={`Enter ${language?.name} content`}
+                                    />
+                                </td>
+                            ))}
                         </tr>
-                    ))}
-                </tbody>
+                    </thead>
+                    <tbody>
+                        {Array.from({ length: maxRows }).map((_, rowIndex) => (
+                            <tr key={rowIndex}>
+                                {languages.map((language) => {
+                                    const content = vocabulary?.data[language?.name]?.[rowIndex]?.content;
 
-            </table>
+                                    return (
+                                        <td key={language?.id} className="border border-gray-300 px-4 py-2">
+                                            <div className="flex items-center">
+                                                {content ? (
+                                                    <>
+                                                        <input type="checkbox" className="mr-2" />
+                                                        {content}
+                                                    </>
+                                                ) : ''
+                                                }
+
+                                            </div>
+                                        </td>
+                                    )
+                                })}
+                            </tr>
+                        ))}
+                    </tbody>
+
+                </table>
+            </div>
         </div>
     );
 }
