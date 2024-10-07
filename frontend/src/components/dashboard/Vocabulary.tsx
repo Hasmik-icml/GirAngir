@@ -119,20 +119,7 @@ export default function Vocabulary() {
         <div className="table-container max-w-full overflow-x-auto">
             {/* Tools */}
             <div className="flex justify-between items-center mb-4 p-4 bg-gray-100 border rounded-md">
-
                 <Button type="submit" size="small" onClick={toggleForm}> Add New Language</Button>
-
-                <div className="flex space-x-4">
-                    <div className="text-sm">
-                        Russian entries: <span className="font-semibold">{10}</span>
-                    </div>
-                    <div className="text-sm">
-                        Armenian entries: <span className="font-semibold">{20}</span>
-                    </div>
-                    <div className="text-sm">
-                        English entries: <span className="font-semibold">{30}</span>
-                    </div>
-                </div>
             </div>
             {/* Modal */}
             {showForm && (
@@ -187,7 +174,9 @@ export default function Vocabulary() {
                 {languages && languages.map((language) => (
                     activeTab === language?.id && (
                         <div key={language?.id} className="p-4 border rounded-md">
-                            <h3 className="font-semibold text-lg mb-2">{language?.name} Content</h3>
+                            <div className="text-sm text-white px-4 py-2 bg-gray-300">
+                                {language?.name}: <span className="font-semibold">{vocabulary && vocabulary?.data[language?.name]?.length}</span>
+                            </div>
                             {/* Replace this with your actual table rows */}
                             <div className="border border-gray-300 p-2">
                                 {/* Table content for the selected language */}
@@ -221,15 +210,20 @@ export default function Vocabulary() {
                     <thead>
                         <tr>
                             {languages.length > 0 && languages.map((language) => (
-                                <td key={language?.id} className="border border-gray-300 px-4 py-2 min-w-[150px] sm:min-w-[100px] lg:min-w-[200px]">
-                                    <input
-                                        type="text"
-                                        value={languageContent}
-                                        onChange={(e) => setLanguageContent(e.target.value)}
-                                        className="border border-gray-400 px-2 py-1 w-full"
-                                        placeholder={`Enter ${language?.name} content`}
-                                    />
-                                </td>
+                                <>
+                                    <td key={language?.id} className="border border-gray-300 px-2 py-1 min-w-[150px] sm:min-w-[100px] lg:min-w-[200px]">
+                                        <div className="text-sm text-white px-4 py-2 bg-gray-300">
+                                            {language?.name}: <span className="font-semibold">{vocabulary && vocabulary?.data[language?.name]?.length}</span>
+                                        </div>
+                                        <input
+                                            type="text"
+                                            value={languageContent}
+                                            onChange={(e) => setLanguageContent(e.target.value)}
+                                            className="border border-gray-400 px-2 py-1 w-full"
+                                            placeholder={`Enter ${language?.name} content`}
+                                        />
+                                    </td>
+                                </>
                             ))}
                         </tr>
                     </thead>
