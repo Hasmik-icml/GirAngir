@@ -38,7 +38,7 @@ export default function Vocabulary() {
     const [vocabulary, setVocabulary] = useState<Vocabulary | null>(null);
     const [showForm, setShowForm] = useState(false);
     const [newLanguage, setNewLanguage] = useState('');
-
+    const [activeTab, setActiveTab] = useState('');
 
     const toggleForm = () => {
         setShowForm(!showForm);
@@ -54,15 +54,11 @@ export default function Vocabulary() {
             })
         })
 
-        console.log("createNewLanguage", createNewLanguage.ok);
-        if (createNewLanguage.ok) {
-            const newLanguageData = await createNewLanguage.json();
-            setLanguages((prevLanguages) => [...prevLanguages, newLanguageData.language]);
-            setNewLanguage('');
-            toggleForm();
-        } else {
-            console.error('Error creating new language');
-        }
+        const newLanguageData = await createNewLanguage.json();
+        setLanguages((prevLanguages) => [...prevLanguages, newLanguageData.language]);
+        setNewLanguage('');
+        toggleForm();
+
     }
 
     const handleNewLanguageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -85,28 +81,33 @@ export default function Vocabulary() {
 
     useEffect(() => {
         // Fetch request for data
-            const fetchData = async () => {
-                try {
-                    const [vocabularyResponse, languagesResponse] = await Promise.all([
-                        fetchWithAuth(`${import.meta.env.VITE_API_URL}/vocabulary/all`, {
-                            method: "GET",
-                        }),
+        const fetchData = async () => {
+            try {
+                const [vocabularyResponse, languagesResponse] = await Promise.all([
+                    fetchWithAuth(`${import.meta.env.VITE_API_URL}/vocabulary/all`, {
+                        method: "GET",
+                    }),
 
-                        fetchWithAuth(`${import.meta.env.VITE_API_URL}/languages/all-languages`, {
-                            method: "GET",
-                        })
-                    ]);
+                    fetchWithAuth(`${import.meta.env.VITE_API_URL}/languages/all-languages`, {
+                        method: "GET",
+                    })
+                ]);
 
-                    const vocabularyData = await vocabularyResponse.json();
-                    const languagesData = await languagesResponse.json();
+                const vocabularyData = await vocabularyResponse.json();
+                const languagesData = await languagesResponse.json();
 
-                    setLanguages(languagesData.languages);
-                    setVocabulary(vocabularyData);
-                } catch (error) {
-                    console.error('Error fetching data', error);
+                setLanguages(languagesData.languages);
+                setVocabulary(vocabularyData);
+
+                if (!activeTab && languagesData.languages.length > 0) {
+                    setActiveTab(languagesData.languages[0]?.id);
                 }
-            };
-            fetchData();
+
+            } catch (error) {
+                console.error('Error fetching data', error);
+            }
+        };
+        fetchData();
 
     }, [languages]);
 
@@ -168,14 +169,59 @@ export default function Vocabulary() {
                 </>
 
             )}
-
+            {/* Tabs for languages */}
+            <div className="block sm:hidden">
+                <ul className="flex justify-around bg-gray-100 border-b">
+                    {languages.map((language) => (
+                        <li key={language?.id} className={`p-2 ${activeTab === language?.id ? 'bg-blue-500 text-white' : ''}`}>
+                            <button onClick={() => setActiveTab(language.id)
+                            }>
+                                {language?.name}
+                            </button>
+                        </li>
+                    ))}
+                </ul>
+            </div>
+            {/* Tab content (one language column at a time) */}
+            <div className="sm:hidden">
+                {languages && languages.map((language) => (
+                    activeTab === language?.id && (
+                        <div key={language?.id} className="p-4 border rounded-md">
+                            <h3 className="font-semibold text-lg mb-2">{language?.name} Content</h3>
+                            {/* Replace this with your actual table rows */}
+                            <div className="border border-gray-300 p-2">
+                                {/* Table content for the selected language */}
+                                <table className="table-auto border-collapse border border-gray-300 w-full table-fixed">
+                                    <tbody>
+                                        {vocabulary && vocabulary?.data[language?.name].map((language, index) => (
+                                            <tr key={index} className="border border-gray-300 w-full">
+                                                <td className="border border-gray-300 px-4 py-2 w-full">
+                                                    <div className="flex items-center">
+                                                        {language?.content ? (
+                                                            <>
+                                                                <input type="checkbox" className="mr-2" />
+                                                                {language?.content}
+                                                            </>
+                                                        ) : ''
+                                                        }
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    )
+                ))}
+            </div>
             {/* Table */}
-            <div className="table-container max-w-full overflow-x-auto">
+            <div className="hidden sm:block table-container max-w-full overflow-x-auto">
                 <table className="min-w-full table-auto border-collapse border border-gray-300">
                     <thead>
                         <tr>
                             {languages.length > 0 && languages.map((language) => (
-                                <td key={language?.id} className="border border-gray-300 px-4 py-2">
+                                <td key={language?.id} className="border border-gray-300 px-4 py-2 min-w-[150px] sm:min-w-[100px] lg:min-w-[200px]">
                                     <input
                                         type="text"
                                         value={languageContent}
@@ -194,7 +240,7 @@ export default function Vocabulary() {
                                     const content = vocabulary?.data[language?.name]?.[rowIndex]?.content;
 
                                     return (
-                                        <td key={language?.id} className="border border-gray-300 px-4 py-2">
+                                        <td key={language?.id} className="border border-gray-300 px-4 py-2 min-w-[150px] sm:min-w-[100px] lg:min-w-[200px]">
                                             <div className="flex items-center">
                                                 {content ? (
                                                     <>
