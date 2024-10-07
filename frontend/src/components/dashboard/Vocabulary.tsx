@@ -160,11 +160,11 @@ export default function Vocabulary() {
             <div className="block sm:hidden">
                 <ul className="flex justify-around border-b">
                     {languages.map((language) => (
-                        <li key={language?.id} className={`flex-1 p-2 ${activeTab === language?.id ? 'bg-slate-600 text-white' : 'text-gray-900 bg-gray-200'} rounded-t-lg border-l border-gray-300 ml-[3px]`}>
-                            <button
-                                className="focus:outline-none"
-                                onClick={() => setActiveTab(language.id)
-                                }>
+                        <li key={language?.id}
+                            className={`flex-1 p-2 ${activeTab === language?.id ? 'bg-slate-600 text-white' : 'text-gray-900 bg-gray-200'} rounded-t-lg border-l border-gray-300 ml-[3px]`}
+                            onClick={() => setActiveTab(language.id)
+                            }>
+                            <button className="focus:outline-none">
                                 {language?.name}
                             </button>
                         </li>
