@@ -182,7 +182,7 @@ export default function Vocabulary() {
                                 {/* Table content for the selected language */}
                                 <table className="table-auto border-collapse border border-gray-300 w-full table-fixed">
                                     <tbody>
-                                        {vocabulary && vocabulary?.data[language?.name].map((language, index) => (
+                                        {vocabulary && vocabulary?.data[language?.name]?.map((language, index) => (
                                             <tr key={index} className="border border-gray-300 w-full">
                                                 <td className="border border-gray-300 px-4 py-2 w-full">
                                                     <div className="flex items-center">
