@@ -119,7 +119,7 @@ export default function Vocabulary() {
         <div className="table-container max-w-full overflow-x-auto">
             {/* Tools */}
             <div className="flex justify-between items-center mb-4 p-4 bg-gray-100 border rounded-md">
-                <Button type="submit" size="small" onClick={toggleForm}> Add New Language</Button>
+                <Button type="submit" size="small" color = 'gray' onClick={toggleForm}> Add New Language</Button>
             </div>
             {/* Modal */}
             {showForm && (
