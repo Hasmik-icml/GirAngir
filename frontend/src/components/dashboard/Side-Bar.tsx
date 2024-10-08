@@ -1,17 +1,31 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 export default function Sidebar() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const sidebarRef = useRef<HTMLElement>(null);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (sidebarRef.current && !sidebarRef.current.contains(event.target as Node)) {
+        setIsSidebarOpen(false);  // Փակել սայդբարը
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   return (
     <>
       <button
-        onClick={toggleSidebar} 
+        onClick={toggleSidebar}
         type="button"
         className="inline-flex items-center p-2 mt-2 ms-3 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700">
         <span className="sr-only">Open sidebar</span>
@@ -20,7 +34,7 @@ export default function Sidebar() {
         </svg>
       </button>
 
-      <aside className={`bg-gray-800 text-white w-64 p-4 space-y-6 absolute sm:relative sm:block transition-transform duration-300 ease-in-out ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} sm:translate-x-0 min-h-screen`}>
+      <aside ref={sidebarRef} className={`bg-gray-800 text-white w-64 p-4 space-y-6 absolute sm:relative sm:block transition-transform duration-300 ease-in-out ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} sm:translate-x-0 min-h-screen`}>
         <div className="p-4 flex flex-col items-center">
           <img src="/girangir.png" alt="Logo" className="w-24 h-24 mb-4" />
         </div>

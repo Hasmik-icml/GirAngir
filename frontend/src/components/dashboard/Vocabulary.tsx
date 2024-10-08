@@ -119,7 +119,7 @@ export default function Vocabulary() {
         <div className="table-container max-w-full overflow-x-auto">
             {/* Tools */}
             <div className="flex justify-between items-center mb-4 p-4 bg-gray-100 border rounded-md">
-                <Button type="submit" size="small" color = 'gray' onClick={toggleForm}> Add New Language</Button>
+                <Button type="submit" size="small" color='gray' onClick={toggleForm}> Add New Language</Button>
             </div>
             {/* Modal */}
             {showForm && (
@@ -209,51 +209,52 @@ export default function Vocabulary() {
             {/* Table */}
             <div className="hidden sm:block table-container max-w-full overflow-x-auto">
                 <table className="min-w-full table-auto border-collapse border border-gray-300">
-                    <thead>
-                        <tr>
-                            {languages.length > 0 && languages.map((language) => (
-                                <>
-                                    <td key={language?.id} className="border border-gray-300 px-2 py-1 min-w-[150px] sm:min-w-[100px] lg:min-w-[200px]">
-                                        <div className="text-sm text-white px-4 py-2 bg-gray-300">
-                                            {language?.name}: <span className="font-semibold">{vocabulary && vocabulary?.data[language?.name]?.length}</span>
-                                        </div>
-                                        <input
-                                            type="text"
-                                            value={languageContent}
-                                            onChange={(e) => setLanguageContent(e.target.value)}
-                                            className="border border-gray-400 px-2 py-1 w-full"
-                                            placeholder={`Enter ${language?.name} content`}
-                                        />
-                                    </td>
-                                </>
-                            ))}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {Array.from({ length: maxRows }).map((_, rowIndex) => (
-                            <tr key={rowIndex}>
-                                {languages.map((language) => {
-                                    const content = vocabulary?.data[language?.name]?.[rowIndex]?.content;
-
-                                    return (
-                                        <td key={language?.id} className="border border-gray-300 px-4 py-2 min-w-[150px] sm:min-w-[100px] lg:min-w-[200px]">
-                                            <div className="flex items-center">
-                                                {content ? (
-                                                    <>
-                                                        <input type="checkbox" className="mr-2" />
-                                                        {content}
-                                                    </>
-                                                ) : ''
-                                                }
-
+                    <div className="overflow-auto max-h-screen">
+                        <thead>
+                            <tr>
+                                {languages.length > 0 && languages.map((language) => (
+                                    <>
+                                        <td key={language?.id} className="border border-gray-300 px-2 py-1 min-w-[150px] sm:min-w-[100px] lg:min-w-[200px]">
+                                            <div className="text-sm text-white px-4 py-2 bg-gray-300">
+                                                {language?.name}: <span className="font-semibold">{vocabulary && vocabulary?.data[language?.name]?.length}</span>
                                             </div>
+                                            <input
+                                                type="text"
+                                                value={languageContent}
+                                                onChange={(e) => setLanguageContent(e.target.value)}
+                                                className="border border-gray-400 px-2 py-1 w-full"
+                                                placeholder={`Enter ${language?.name} content`}
+                                            />
                                         </td>
-                                    )
-                                })}
+                                    </>
+                                ))}
                             </tr>
-                        ))}
-                    </tbody>
+                        </thead>
+                        <tbody>
+                            {Array.from({ length: maxRows }).map((_, rowIndex) => (
+                                <tr key={rowIndex}>
+                                    {languages.map((language) => {
+                                        const content = vocabulary?.data[language?.name]?.[rowIndex]?.content;
 
+                                        return (
+                                            <td key={language?.id} className="border border-gray-300 px-4 py-2 min-w-[150px] sm:min-w-[100px] lg:min-w-[200px]">
+                                                <div className="flex items-center">
+                                                    {content ? (
+                                                        <>
+                                                            <input type="checkbox" className="mr-2" />
+                                                            {content}
+                                                        </>
+                                                    ) : ''
+                                                    }
+
+                                                </div>
+                                            </td>
+                                        )
+                                    })}
+                                </tr>
+                            ))}
+                        </tbody>
+                    </div>
                 </table>
             </div>
         </div>
