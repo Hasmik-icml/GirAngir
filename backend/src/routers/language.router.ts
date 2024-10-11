@@ -15,6 +15,9 @@ router
                 .notEmpty().withMessage("Name must be provided")
                 .isString().withMessage("Name must be string")
                 .escape(),
+            body("isNative")
+                .optional()
+                .isBoolean().withMessage("isNative must be a boolean value")
         ],
         validateRequest,
         LanguageController.createNewLanguage,

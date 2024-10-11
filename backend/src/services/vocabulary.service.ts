@@ -158,7 +158,7 @@ export class VocabularyService {
             if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
                 throw new NotFoundError('Content not found');
             }
-            throw new Error('Error updating Blog');
+            throw new Error('Error updating Content');
         }
 
     }
@@ -178,7 +178,7 @@ export class VocabularyService {
             if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
                 throw new NotFoundError('Content not found');
             }
-            throw new Error('Error updating Blog');
+            throw new Error('Error deleting Content');
         }
 
     }

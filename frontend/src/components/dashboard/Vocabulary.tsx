@@ -33,14 +33,14 @@ export default function Vocabulary() {
     }
 
     const [languageContent, setLanguageContent] = useState('');
-    // const [armenianContent, setArmenianContent] = useState('');
-    // const [russianContent, setRussianContent] = useState('');
     const [languages, setLanguages] = useState<Language[]>([]);
     const [vocabulary, setVocabulary] = useState<Vocabulary | null>(null);
     const [showForm, setShowForm] = useState(false);
     const [newLanguage, setNewLanguage] = useState('');
     const [activeTab, setActiveTab] = useState('');
     const [isLanguageAdded, setIsLanguageAdded] = useState(false);
+    const [isNative, setIsNative] = useState(false);
+    const [backendError, setBackendError] = useState("");
 
 
     const history = useNavigate();
@@ -49,18 +49,30 @@ export default function Vocabulary() {
         setShowForm(!showForm);
     }
 
+    const toggleIsNative = () => {
+        setIsNative(!isNative);
+    }
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         const createNewLanguage = await fetchWithAuth(`${import.meta.env.VITE_API_URL}/languages/create`, {
             method: "POST",
             body: JSON.stringify({
-                "name": newLanguage
+                "name": newLanguage,
+                "isNative": isNative,
             })
         })
 
-        if (!createNewLanguage.ok) {
-            history("/login");
+        if (createNewLanguage.status === 400) {
+            const errorData = await createNewLanguage.json();
+
+            setBackendError(errorData.errors[0].message);
+        // }
+
+
+        // if (!createNewLanguage.ok) {
+        //     history("/login");
         } else {
 
             const newLanguageData = await createNewLanguage.json();
@@ -68,9 +80,8 @@ export default function Vocabulary() {
             setNewLanguage('');
             setIsLanguageAdded(true);
             toggleForm();
+            toggleIsNative();
         }
-
-
     }
 
     const handleNewLanguageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -106,8 +117,8 @@ export default function Vocabulary() {
                 ]);
 
                 if (!vocabularyResponse.ok || !languagesResponse.ok) {
-                        history("/login");
-                   
+                    history("/login");
+
                 } else {
 
                     const vocabularyData = await vocabularyResponse.json();
@@ -156,6 +167,12 @@ export default function Vocabulary() {
                                     value={newLanguage}
                                     onChange={handleNewLanguageChange}
                                 />
+                                <div>
+
+                                    <input type="checkbox" id="is-native" checked={isNative} onChange={toggleIsNative} className="mr-2" />
+                                    <label htmlFor="is-native" className="text-gray-400">Make native language</label>
+                                </div>
+                                {backendError && <p className="text-red-500 text-sm">{backendError}</p>}
                                 <Button
                                     type="button"
                                     onClick={toggleForm}
@@ -173,7 +190,8 @@ export default function Vocabulary() {
                     </div>
                 </>
 
-            )}
+            )
+            }
             {/* Tabs for languages */}
             <div className="block sm:hidden">
                 <ul className="flex justify-around border-b">
@@ -275,6 +293,6 @@ export default function Vocabulary() {
                     </div>
                 </table>
             </div>
-        </div>
+        </div >
     );
 }

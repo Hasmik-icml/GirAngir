@@ -1,6 +1,7 @@
 import { Language, Prisma, PrismaClient } from "@prisma/client";
 import { NotFoundError } from "../handlers/not-found.handler";
 import { BadRequestError } from "../handlers/bad-request.handler";
+import { CustomError } from "../errors/custom.error";
 
 export class LanguageService {
     private static prismaclient = new PrismaClient;
@@ -9,20 +10,37 @@ export class LanguageService {
         return this.prismaclient.language;
     }
 
-    public static async create(name: string, userId: string): Promise<Language> {
+    public static async create(name: string, isNative: Boolean, userId: string): Promise<Language> {
         try {
+            const nativeLanguage = await this.repo.findFirst({
+                where: {
+                    userId: userId,
+                    isNative: true,
+                }
+            });
+
+            if (nativeLanguage) {
+                throw new BadRequestError('Native language already exists.');
+            }
+
             const language = await this.repo.create({
-                data: { name, userId },
+                data: { name, userId, isNative: true },
             })
+
             if (!language) {
                 throw new Error("error");
             }
+
             return language;
         } catch (error) {
             if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
                 throw new BadRequestError('Language already exists');
             }
-            throw new Error('Error creating blog');
+
+            if (!(error instanceof CustomError)) {
+                throw new BadRequestError('Error creating language');
+            } 
+            throw error;
         }
     }
 
@@ -42,7 +60,7 @@ export class LanguageService {
 
     public static async update(id: string, name: string) {
         try {
-           return this.repo.update({
+            return this.repo.update({
                 where: { id },
                 data: { name },
             })
