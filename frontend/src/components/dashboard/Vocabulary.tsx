@@ -68,11 +68,11 @@ export default function Vocabulary() {
             const errorData = await createNewLanguage.json();
 
             setBackendError(errorData.errors[0].message);
-        // }
+            // }
 
 
-        // if (!createNewLanguage.ok) {
-        //     history("/login");
+            // if (!createNewLanguage.ok) {
+            //     history("/login");
         } else {
 
             const newLanguageData = await createNewLanguage.json();
@@ -192,6 +192,7 @@ export default function Vocabulary() {
 
             )
             }
+            {/* For small devices */}
             {/* Tabs for languages */}
             <div className="block sm:hidden">
                 <ul className="flex justify-around border-b">
@@ -212,10 +213,9 @@ export default function Vocabulary() {
                 {languages && languages.map((language) => (
                     activeTab === language?.id && (
                         <div key={language?.id} className="p-4 border rounded-md">
-                            <div className="text-sm text-white px-4 py-2 bg-gray-300">
+                            <div className="text-sm text-white px-4 py-2 bg-gray-300 cursor-pointer">
                                 {language?.name}: <span className="font-semibold">{vocabulary && vocabulary?.data[language?.name]?.length}</span>
                             </div>
-                            {/* Replace this with your actual table rows */}
                             <div className="border border-gray-300 p-2">
                                 {/* Table content for the selected language */}
                                 <table className="table-auto border-collapse border border-gray-300 w-full table-fixed">
@@ -250,7 +250,7 @@ export default function Vocabulary() {
                             <tr>
                                 {languages.length > 0 && languages.map((language) => (
                                     <>
-                                        <td key={language?.id} className="border border-gray-300 px-2 py-1 min-w-[150px] sm:min-w-[100px] lg:min-w-[200px]">
+                                        <td key={language?.id} className="border border-gray-300 px-2 py-1 hover:bg-gray-200 cursor-pointer min-w-[150px] sm:min-w-[100px] lg:min-w-[200px]">
                                             <div className="text-sm text-white px-4 py-2 bg-gray-300">
                                                 {language?.name}: <span className="font-semibold">{vocabulary && vocabulary?.data[language?.name]?.length}</span>
                                             </div>
