@@ -240,7 +240,7 @@ export default function Vocabulary() {
                                                 type="text"
                                                 value={languageContent}
                                                 onChange={(e) => setLanguageContent(e.target.value)}
-                                                className="border border-gray-400 px-2 py-1 w-full"
+                                                className="border border-gray-400 px-2 py-1 w-full focus:outline-none"
                                                 placeholder={`Enter ${language?.name} content`}
                                             />
                                         </td>
