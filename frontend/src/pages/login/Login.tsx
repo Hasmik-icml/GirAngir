@@ -61,7 +61,6 @@ export default function Login() {
 
         const emailValidationError = validateEmail(email);
         const passwordValidationError = validatePassword(password);
-        console.log("111", emailValidationError, passwordValidationError);
         setEmailError(emailValidationError);
         setPasswordError(passwordValidationError);
 
@@ -78,6 +77,7 @@ export default function Login() {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({ email, password }),
+                credentials: 'include',
             })
         };
 

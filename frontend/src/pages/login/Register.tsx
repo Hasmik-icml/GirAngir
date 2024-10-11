@@ -61,7 +61,6 @@ export default function Register() {
         body: JSON.stringify({ email, password, name })
 
       });
-      console.log(333, response);
       if (!response.ok) {
         const errorData = await response.json();
         setBackendError(errorData.errors[0].message);
@@ -70,7 +69,6 @@ export default function Register() {
       }
 
       const data = await response.json();;
-      console.log("data", data);
 
       if (data) {
         history('/login');

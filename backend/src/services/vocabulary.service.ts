@@ -86,8 +86,6 @@ export class VocabularyService {
 
             return createdTranslations.map(translation => translation.id);
         } catch (error) {
-            console.log(555, error);
-
             throw error;
         }
     }
@@ -143,7 +141,7 @@ export class VocabularyService {
 
             return [groupedByLanguage, count];
         } catch (error) {
-            console.log(0, error);
+            console.log('error', error);
             throw error;
         }
     }

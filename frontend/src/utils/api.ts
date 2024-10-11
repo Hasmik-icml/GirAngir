@@ -1,11 +1,13 @@
 export async function fetchWithAuth(url: string, options: RequestInit) {
     const token = localStorage.getItem('accessToken');
 
+    options.credentials = 'include'; 
+
     if (token) {
         options.headers = {
             ...options.headers,
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
         }
     }
 
@@ -29,10 +31,12 @@ export async function fetchWithAuth(url: string, options: RequestInit) {
             options.headers = {
                 ...options.headers,
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`,
+                'Authorization': `Bearer ${newAccessToken}`,
             };
 
             response = await fetch(url, options);
+        } else {
+            return response;
         }
     }
 

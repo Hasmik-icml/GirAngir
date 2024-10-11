@@ -3,6 +3,7 @@ import Button from "../buttons/Button";
 import FormHeader from "../Form-Header";
 import FormField from "../Form-Field";
 import { fetchWithAuth } from "../../utils/api";
+import { useNavigate } from "react-router-dom";
 
 export default function Vocabulary() {
 
@@ -39,6 +40,10 @@ export default function Vocabulary() {
     const [showForm, setShowForm] = useState(false);
     const [newLanguage, setNewLanguage] = useState('');
     const [activeTab, setActiveTab] = useState('');
+    const [isLanguageAdded, setIsLanguageAdded] = useState(false);
+
+
+    const history = useNavigate();
 
     const toggleForm = () => {
         setShowForm(!showForm);
@@ -54,10 +59,17 @@ export default function Vocabulary() {
             })
         })
 
-        const newLanguageData = await createNewLanguage.json();
-        setLanguages((prevLanguages) => [...prevLanguages, newLanguageData.language]);
-        setNewLanguage('');
-        toggleForm();
+        if (!createNewLanguage.ok) {
+            history("/login");
+        } else {
+
+            const newLanguageData = await createNewLanguage.json();
+            setLanguages((prevLanguages) => [...prevLanguages, newLanguageData.language]);
+            setNewLanguage('');
+            setIsLanguageAdded(true);
+            toggleForm();
+        }
+
 
     }
 
@@ -93,23 +105,29 @@ export default function Vocabulary() {
                     })
                 ]);
 
-                const vocabularyData = await vocabularyResponse.json();
-                const languagesData = await languagesResponse.json();
+                if (!vocabularyResponse.ok || !languagesResponse.ok) {
+                        history("/login");
+                   
+                } else {
 
-                setLanguages(languagesData.languages);
-                setVocabulary(vocabularyData);
+                    const vocabularyData = await vocabularyResponse.json();
+                    const languagesData = await languagesResponse.json();
+                    setLanguages(languagesData.languages);
+                    setVocabulary(vocabularyData);
 
-                if (!activeTab && languagesData.languages.length > 0) {
-                    setActiveTab(languagesData.languages[0]?.id);
+                    if (!activeTab && languagesData.languages.length > 0) {
+                        setActiveTab(languagesData.languages[0]?.id);
+                    }
                 }
-
             } catch (error) {
                 console.error('Error fetching data', error);
+                history("/login");
             }
         };
         fetchData();
+        setIsLanguageAdded(false);
 
-    }, [languages]);
+    }, [isLanguageAdded]);
 
     const maxRows = Math.max(
         ...languages.map((language) => language?.name ? vocabulary?.data[language.name]?.length || 0 : 0)
