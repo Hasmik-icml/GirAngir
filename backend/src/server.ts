@@ -5,10 +5,10 @@ import { router } from "./routers";
 import { errorHandler } from "./middleware/error-handler.middleware";
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT;
 
 app.use(cors({
-    origin: 'http://localhost:5173',
+    origin: process.env.API_URL,
     credentials: true,
 }));
 app.use(cookieParser());
