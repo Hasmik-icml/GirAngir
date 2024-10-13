@@ -4,38 +4,39 @@ import FormHeader from "../Form-Header";
 import FormField from "../Form-Field";
 import { fetchWithAuth } from "../../utils/api";
 import { useNavigate } from "react-router-dom";
+import SettingsModal from "./SettingsModal";
+
+export interface Language {
+    id: string;
+    name: string;
+    userId: string;
+    isNative: boolean;
+    createdAt: string;
+    updatedAt: string;
+    deletedAt: string | null;
+}
+
+export interface VocabularyItem {
+    id: string;
+    content: string;
+    createdAt: string;
+    updatedAt: string;
+    deletedAt: string | null;
+    languageId: string;
+    userId: string;
+}
+
+export interface Vocabulary {
+    data: { [key: string]: VocabularyItem[] };
+    count: number;
+}
 
 export default function Vocabulary() {
-
-    interface Language {
-        id: string;
-        name: string;
-        userId: string;
-        isNative: string;
-        createdAt: string;
-        updatedAt: string;
-        deletedAt: string | null;
-    }
-
-    interface VocabularyItem {
-        id: string;
-        content: string;
-        createdAt: string;
-        updatedAt: string;
-        deletedAt: string | null;
-        languageId: string;
-        userId: string;
-    }
-
-    interface Vocabulary {
-        data: { [key: string]: VocabularyItem[] };
-        count: number;
-    }
-
     const [languageContent, setLanguageContent] = useState('');
     const [languages, setLanguages] = useState<Language[]>([]);
     const [vocabulary, setVocabulary] = useState<Vocabulary | null>(null);
-    const [showForm, setShowForm] = useState(false);
+    const [showAddLanguageForm, setAddLanguageForm] = useState(false);
+    const [showSettingsForm, setShowSettingsForm] = useState(false);
     const [newLanguage, setNewLanguage] = useState('');
     const [activeTab, setActiveTab] = useState('');
     const [isLanguageAdded, setIsLanguageAdded] = useState(false);
@@ -45,10 +46,13 @@ export default function Vocabulary() {
 
     const history = useNavigate();
 
-    const toggleForm = () => {
-        setShowForm(!showForm);
+    const toggleAddLanguageModal = () => {
+        setAddLanguageForm(!showAddLanguageForm);
     }
 
+    const toggleSettingsModal = () => {
+        setShowSettingsForm(!showSettingsForm);
+    }
     const toggleIsNative = () => {
         setIsNative(!isNative);
     }
@@ -68,18 +72,14 @@ export default function Vocabulary() {
             const errorData = await createNewLanguage.json();
 
             setBackendError(errorData.errors[0].message);
-            // }
-
-
-            // if (!createNewLanguage.ok) {
-            //     history("/login");
         } else {
 
             const newLanguageData = await createNewLanguage.json();
+
             setLanguages((prevLanguages) => [...prevLanguages, newLanguageData.language]);
             setNewLanguage('');
             setIsLanguageAdded(true);
-            toggleForm();
+            toggleAddLanguageModal();
             toggleIsNative();
         }
     }
@@ -87,6 +87,13 @@ export default function Vocabulary() {
     const handleNewLanguageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         setNewLanguage(e.target.value);
     }
+
+    const updateNativeLanguage = (updatedLanguage: Language[]) => {
+       if (updatedLanguage.length > 0) {
+           setLanguages(updatedLanguage); 
+        }
+    };
+
     // const handleKeyPress = (e: React.KeyboardEvent, column: string) => {
     //     if (e.key === 'Enter') {
     //         if (column === 'english') {
@@ -123,6 +130,7 @@ export default function Vocabulary() {
 
                     const vocabularyData = await vocabularyResponse.json();
                     const languagesData = await languagesResponse.json();
+
                     setLanguages(languagesData.languages);
                     setVocabulary(vocabularyData);
 
@@ -148,10 +156,21 @@ export default function Vocabulary() {
         <div className="table-container max-w-full overflow-x-auto">
             {/* Tools */}
             <div className="flex justify-between items-center mb-4 p-4 bg-gray-100 border rounded-md">
-                <Button type="submit" size="small" color='gray' onClick={toggleForm}> Add New Language</Button>
+                <Button type="submit" size="small" color='gray' onClick={toggleAddLanguageModal}> + </Button>
+                <Button type="submit" size="small" color='gray' onClick={toggleSettingsModal}> Settings </Button>
+                {showSettingsForm && (
+                    <SettingsModal
+                        showForm={showSettingsForm}
+                        languages={languages}
+                        toggleSettingsModal={toggleSettingsModal}
+                        onUpdateNativeLanguge={updateNativeLanguage}
+                    />
+                )}
+            </div>
+            <div className="flex justify-between items-center mb-4 p-4 bg-gray-100 border rounded-md">
             </div>
             {/* Modal */}
-            {showForm && (
+            {showAddLanguageForm && (
                 <>
                     <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center backdrop-blur-sm z-50">
                         <div className="bg-gray-800 p-6 rounded-md shadow-lg max-w-sm w-full">
@@ -175,7 +194,7 @@ export default function Vocabulary() {
                                 {backendError && <p className="text-red-500 text-sm">{backendError}</p>}
                                 <Button
                                     type="button"
-                                    onClick={toggleForm}
+                                    onClick={toggleAddLanguageModal}
                                 >
                                     Cancel
                                 </Button>
@@ -213,7 +232,7 @@ export default function Vocabulary() {
                 {languages && languages.map((language) => (
                     activeTab === language?.id && (
                         <div key={language?.id} className="p-4 border rounded-md">
-                            <div className="text-sm text-white px-4 py-2 bg-gray-300 cursor-pointer">
+                            <div className="flex justify-between items-center text-sm text-white px-4 py-2 bg-gray-300 cursor-pointer">
                                 {language?.name}: <span className="font-semibold">{vocabulary && vocabulary?.data[language?.name]?.length}</span>
                             </div>
                             <div className="border border-gray-300 p-2">
@@ -251,7 +270,7 @@ export default function Vocabulary() {
                                 {languages.length > 0 && languages.map((language) => (
                                     <>
                                         <td key={language?.id} className="border border-gray-300 px-2 py-1 hover:bg-gray-200 cursor-pointer min-w-[150px] sm:min-w-[100px] lg:min-w-[200px]">
-                                            <div className="text-sm text-white px-4 py-2 bg-gray-300">
+                                            <div className="flex justify-between text-sm text-white px-4 py-2 bg-gray-300">
                                                 {language?.name}: <span className="font-semibold">{vocabulary && vocabulary?.data[language?.name]?.length}</span>
                                             </div>
                                             <input
