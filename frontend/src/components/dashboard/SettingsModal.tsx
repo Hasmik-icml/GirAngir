@@ -69,7 +69,7 @@ export default function Settings(
         const findInitialNativeLanguage = (languages).filter((language: Language) => language.isNative);
 
         if (findInitialNativeLanguage) {
-            setNativeLanguageId(findInitialNativeLanguage[0].id)
+            setNativeLanguageId(findInitialNativeLanguage[0]?.id)
         }
 
     }, [languages])
