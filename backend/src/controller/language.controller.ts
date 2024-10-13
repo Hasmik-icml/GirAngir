@@ -31,11 +31,13 @@ export class LanguageController {
         }
     }
 
-        const { name } = req.body;
+    public static async updateLanguage(req: Request, res: Response) {
+        const { name, isNative } = req.body;
         const { id } = req.params;
+        const userId = (req as any).userId;
 
         try {
-            const updatedLanguage = await LanguageService.update(id, name);
+            const updatedLanguage = await LanguageService.update(id, isNative, name, userId);
             res.status(200).send(updatedLanguage);
         } catch (error) {
             if (error instanceof CustomError) {

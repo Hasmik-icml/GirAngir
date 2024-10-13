@@ -39,7 +39,7 @@ export class LanguageService {
 
             if (!(error instanceof CustomError)) {
                 throw new BadRequestError('Error creating language');
-            } 
+            }
             throw error;
         }
     }
@@ -58,18 +58,42 @@ export class LanguageService {
         }
     }
 
-    public static async update(id: string, name: string) {
+    public static async update(id: string, isNative: boolean, name: string, userId: string) {
         try {
+            const languageToUpdate = await this.repo.findFirst({
+                where: {
+                    id,
+                    userId,
+                }
+            });
+    
+            if (!languageToUpdate) {
+                throw new NotFoundError('Language not found');
+            }
+
+            const nativeLanguage = await this.repo.findFirst({
+                where: {
+                    userId: userId,
+                    isNative: true,
+                }
+            });
+
+            if (nativeLanguage) {
+               await this.repo.update({
+                    where: { id: nativeLanguage.id, userId },
+                    data: { isNative: false },
+                });
+            }
+
             return this.repo.update({
-                where: { id },
-                data: { name },
+                where: { id: languageToUpdate.id, userId },
+                data: { name, isNative },
             })
         } catch (error) {
             if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
                 throw new NotFoundError('Language not found');
             }
             throw new Error('Error updating Language');
-
         }
     }
 

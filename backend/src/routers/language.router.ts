@@ -29,9 +29,12 @@ router
     .put("/edit/:id",
         [
             body("name")
-                .notEmpty().withMessage("Name must be provided")
+                .optional()
                 .isString().withMessage("Name must be string")
                 .escape(),
+            body("isNative")
+                .optional()
+                .isBoolean().withMessage("isNative must be a boolean value")
         ],
         validateRequest,
         LanguageController.updateLanguage,
