@@ -31,7 +31,6 @@ export class LanguageController {
         }
     }
 
-    public static async upadateLanguage(req: Request, res: Response) {
         const { name } = req.body;
         const { id } = req.params;
 

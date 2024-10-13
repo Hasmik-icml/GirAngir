@@ -34,7 +34,7 @@ router
                 .escape(),
         ],
         validateRequest,
-        LanguageController.upadateLanguage,
+        LanguageController.updateLanguage,
     )
     .delete("/:id",
         [
