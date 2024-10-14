@@ -55,6 +55,7 @@ export default function Vocabulary() {
     }
     const toggleIsNative = () => {
         setIsNative(!isNative);
+        setBackendError('');
     }
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -80,7 +81,7 @@ export default function Vocabulary() {
             setNewLanguage('');
             setIsLanguageAdded(true);
             toggleAddLanguageModal();
-            toggleIsNative();
+            setIsNative(false);
         }
     }
 

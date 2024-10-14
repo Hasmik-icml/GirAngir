@@ -10,21 +10,23 @@ export class LanguageService {
         return this.prismaclient.language;
     }
 
-    public static async create(name: string, isNative: Boolean, userId: string): Promise<Language> {
+    public static async create(name: string, isNative: boolean, userId: string): Promise<Language> {
         try {
-            const nativeLanguage = await this.repo.findFirst({
-                where: {
-                    userId: userId,
-                    isNative: true,
-                }
-            });
+            if (isNative) {
+                const nativeLanguage = await this.repo.findFirst({
+                    where: {
+                        userId: userId,
+                        isNative,
+                    }
+                });
 
-            if (nativeLanguage) {
-                throw new BadRequestError('Native language already exists.');
+                if (nativeLanguage) {
+                    throw new BadRequestError('Native language already exists.');
+                }
             }
 
             const language = await this.repo.create({
-                data: { name, userId, isNative: true },
+                data: { name, userId, isNative },
             })
 
             if (!language) {
@@ -66,7 +68,7 @@ export class LanguageService {
                     userId,
                 }
             });
-    
+
             if (!languageToUpdate) {
                 throw new NotFoundError('Language not found');
             }
@@ -79,7 +81,7 @@ export class LanguageService {
             });
 
             if (nativeLanguage) {
-               await this.repo.update({
+                await this.repo.update({
                     where: { id: nativeLanguage.id, userId },
                     data: { isNative: false },
                 });
