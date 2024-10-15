@@ -46,17 +46,22 @@ export default function Vocabulary() {
 
     const history = useNavigate();
 
+    const handelRefresh = () => {
+        setDoRefresh(!doRefresh);
+    };
+
     const toggleAddLanguageModal = () => {
         setAddLanguageForm(!showAddLanguageForm);
-    }
+    };
 
     const toggleSettingsModal = () => {
         setShowSettingsForm(!showSettingsForm);
-    }
+    };
+
     const toggleIsNative = () => {
         setIsNative(!isNative);
         setBackendError('');
-    }
+    };
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -187,6 +192,7 @@ export default function Vocabulary() {
                         languages={languages}
                         toggleSettingsModal={toggleSettingsModal}
                         onUpdateNativeLanguge={updateNativeLanguage}
+                        doRefresh={handelRefresh}
                     />
                 )}
             </div>

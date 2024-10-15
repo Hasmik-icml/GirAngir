@@ -9,13 +9,15 @@ export default function Settings(
         showForm,
         languages,
         toggleSettingsModal,
-        onUpdateNativeLanguge
+        onUpdateNativeLanguge,
+        doRefresh,
     }:
         {
             showForm: boolean,
             languages: ILanguage[],
             toggleSettingsModal: () => void,
-            onUpdateNativeLanguge: (updatedLanguage: ILanguage[]) => void
+            onUpdateNativeLanguge: (updatedLanguage: ILanguage[]) => void,
+            doRefresh: () => void,
         }) {
 
     const [nativeLanguageId, setNativeLanguageId] = useState<string | undefined>(undefined);
@@ -57,7 +59,7 @@ export default function Settings(
             );
             onUpdateNativeLanguge(updatedLanguages);
             setNativeLanguageId(nativeLanguageId);
-
+            doRefresh();
         }
         toggleSettingsModal();
 
