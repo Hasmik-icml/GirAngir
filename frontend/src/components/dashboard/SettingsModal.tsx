@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Button from "../buttons/Button";
 import FormHeader from "../Form-Header";
-import { Language } from "./Vocabulary";
+import { ILanguage } from "./Vocabulary";
 import { fetchWithAuth } from "../../utils/api";
 
 export default function Settings(
@@ -13,9 +13,9 @@ export default function Settings(
     }:
         {
             showForm: boolean,
-            languages: Language[],
+            languages: ILanguage[],
             toggleSettingsModal: () => void,
-            onUpdateNativeLanguge: (updatedLanguage: Language[]) => void
+            onUpdateNativeLanguge: (updatedLanguage: ILanguage[]) => void
         }) {
 
     const [nativeLanguageId, setNativeLanguageId] = useState<string | undefined>(undefined);
@@ -66,7 +66,7 @@ export default function Settings(
     if (!showForm) return null;
 
     useEffect(() => {
-        const findInitialNativeLanguage = (languages).filter((language: Language) => language.isNative);
+        const findInitialNativeLanguage = (languages).filter((language: ILanguage) => language.isNative);
 
         if (findInitialNativeLanguage) {
             setNativeLanguageId(findInitialNativeLanguage[0]?.id)

@@ -6,7 +6,7 @@ import { fetchWithAuth } from "../../utils/api";
 import { useNavigate } from "react-router-dom";
 import SettingsModal from "./SettingsModal";
 
-export interface Language {
+export interface ILanguage {
     id: string;
     name: string;
     userId: string;
@@ -16,7 +16,7 @@ export interface Language {
     deletedAt: string | null;
 }
 
-export interface VocabularyItem {
+export interface IVocabularyItem {
     id: string;
     content: string;
     createdAt: string;
@@ -26,15 +26,15 @@ export interface VocabularyItem {
     userId: string;
 }
 
-export interface Vocabulary {
-    data: { [key: string]: VocabularyItem[] };
+export interface IVocabulary {
+    data: { [key: string]: IVocabularyItem[] };
     count: number;
 }
 
 export default function Vocabulary() {
-    const [languageContent, setLanguageContent] = useState('');
-    const [languages, setLanguages] = useState<Language[]>([]);
-    const [vocabulary, setVocabulary] = useState<Vocabulary | null>(null);
+    const [languageContent, setLanguageContent] = useState<{ [key: string]: string }>({});
+    const [languages, setLanguages] = useState<ILanguage[]>([]);
+    const [vocabulary, setVocabulary] = useState<IVocabulary | null>(null);
     const [showAddLanguageForm, setAddLanguageForm] = useState(false);
     const [showSettingsForm, setShowSettingsForm] = useState(false);
     const [newLanguage, setNewLanguage] = useState('');
@@ -87,28 +87,49 @@ export default function Vocabulary() {
 
     const handleNewLanguageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         setNewLanguage(e.target.value);
-    }
+    };
 
-    const updateNativeLanguage = (updatedLanguage: Language[]) => {
-       if (updatedLanguage.length > 0) {
-           setLanguages(updatedLanguage); 
+    const updateNativeLanguage = (updatedLanguage: ILanguage[]) => {
+        if (updatedLanguage.length > 0) {
+            setLanguages(updatedLanguage);
         }
     };
 
-    // const handleKeyPress = (e: React.KeyboardEvent, column: string) => {
-    //     if (e.key === 'Enter') {
-    //         if (column === 'english') {
-    //             setData({ ...data, english: [...data.english, englishWord] });
-    //             setEnglishWord('');
-    //         } else if (column === 'armenian') {
-    //             setData({ ...data, armenian: [...data.armenian, armenianWord] });
-    //             setArmenianWord('');
-    //         } else if (column === 'russian') {
-    //             setData({ ...data, russian: [...data.russian, russianWord] });
-    //             setRussianWord('');
-    //         }
-    //     }
-    // };
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, languageId: string) => {
+        setLanguageContent({
+            ...languageContent,
+            [languageId]: e.target.value,
+        });
+        setBackendError('');
+    };
+
+
+    const handleKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>, languageId: string,) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+
+            const response = await fetchWithAuth(`${import.meta.env.VITE_API_URL}/vocabulary/create`, {
+                method: "POST",
+                body: JSON.stringify({
+                    "content": languageContent[languageId],
+                    "languageId": languageId
+                }),
+            });
+
+            if (response.ok) {
+                const newContent = await response.json();
+                console.log("222", newContent);
+
+                setLanguageContent({
+                    ...languageContent,
+                    [languageId]: '',
+                });
+            } else {
+                const errorData = await response.json();
+                setBackendError(errorData.errors[0].message);
+            }
+        }
+    };
 
     useEffect(() => {
         // Fetch request for data
@@ -120,7 +141,7 @@ export default function Vocabulary() {
                     }),
 
                     fetchWithAuth(`${import.meta.env.VITE_API_URL}/languages/all-languages`, {
-                        method: "GET",
+                        method: "GET"
                     })
                 ]);
 
@@ -168,7 +189,12 @@ export default function Vocabulary() {
                     />
                 )}
             </div>
-            <div className="flex justify-between items-center mb-4 p-4 bg-gray-100 border rounded-md">
+            <div className="relative flex justify-between items-center mb-4 p-4 bg-gray-100 border rounded-md">
+                {backendError && (
+                    <div className="absolute top-0 left-0 w-full bg-red-500 text-white p-2 rounded-md">
+                        {backendError}
+                    </div>
+                )}
             </div>
             {/* Modal */}
             {showAddLanguageForm && (
@@ -236,6 +262,14 @@ export default function Vocabulary() {
                             <div className="flex justify-between items-center text-sm text-white px-4 py-2 bg-gray-300 cursor-pointer">
                                 {language?.name}: <span className="font-semibold">{vocabulary && vocabulary?.data[language?.name]?.length}</span>
                             </div>
+                            <input
+                                type="text"
+                                value={languageContent[language?.id] || ''}
+                                onChange={(e) => handleInputChange(e, language?.id)}
+                                onKeyDown={(e) => handleKeyDown(e, language?.id)}
+                                className="border border-gray-400 px-2 py-1 w-full focus:outline-none"
+                                placeholder={`Enter ${language?.name} content`}
+                            />
                             <div className="border border-gray-300 p-2">
                                 {/* Table content for the selected language */}
                                 <table className="table-auto border-collapse border border-gray-300 w-full table-fixed">
@@ -276,8 +310,9 @@ export default function Vocabulary() {
                                             </div>
                                             <input
                                                 type="text"
-                                                value={languageContent}
-                                                onChange={(e) => setLanguageContent(e.target.value)}
+                                                value={languageContent[language?.id] || ''}
+                                                onChange={(e) => handleInputChange(e, language?.id)}
+                                                onKeyDown={(e) => handleKeyDown(e, language?.id)}
                                                 className="border border-gray-400 px-2 py-1 w-full focus:outline-none"
                                                 placeholder={`Enter ${language?.name} content`}
                                             />
@@ -291,7 +326,6 @@ export default function Vocabulary() {
                                 <tr key={rowIndex}>
                                     {languages.map((language) => {
                                         const content = vocabulary?.data[language?.name]?.[rowIndex]?.content;
-
                                         return (
                                             <td key={language?.id} className="border border-gray-300 px-4 py-2 min-w-[150px] sm:min-w-[100px] lg:min-w-[200px]">
                                                 <div className="flex items-center">
