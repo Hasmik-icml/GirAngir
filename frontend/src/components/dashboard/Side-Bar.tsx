@@ -34,14 +34,13 @@ export default function Sidebar() {
         </svg>
       </button>
 
-      <aside ref={sidebarRef} className={`bg-gray-800 text-white w-64 p-4 space-y-6 absolute sm:relative sm:block transition-transform duration-300 ease-in-out ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} sm:translate-x-0 min-h-screen`}>
+      <aside ref={sidebarRef} className={`bg-gray-800 text-white w-64 p-4 space-y-6 absolute fixed sm:relative sm:block transition-transform duration-300 ease-in-out ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} sm:translate-x-0 min-h-screen z-50`}>
         <div className="p-4 flex flex-col items-center">
           <img src="/girangir.png" alt="Logo" className="w-24 h-24 mb-4" />
         </div>
         <nav className="mt-10 flex-grow">
           <ul className="flex flex-col space-y-2">
             <li><Link to="/dashboard" className="px-4 py-2 hover:bg-gray-700">Vocabulary</Link></li>
-            {/* Ավելացրեք մյուս հղումները */}
           </ul>
         </nav>
       </aside>
