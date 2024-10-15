@@ -39,7 +39,7 @@ export default function Vocabulary() {
     const [showSettingsForm, setShowSettingsForm] = useState(false);
     const [newLanguage, setNewLanguage] = useState('');
     const [activeTab, setActiveTab] = useState('');
-    const [isLanguageAdded, setIsLanguageAdded] = useState(false);
+    const [doRefresh, setDoRefresh] = useState(false);
     const [isNative, setIsNative] = useState(false);
     const [backendError, setBackendError] = useState("");
 
@@ -79,7 +79,7 @@ export default function Vocabulary() {
 
             setLanguages((prevLanguages) => [...prevLanguages, newLanguageData.language]);
             setNewLanguage('');
-            setIsLanguageAdded(true);
+            setDoRefresh(true);
             toggleAddLanguageModal();
             setIsNative(false);
         }
@@ -124,6 +124,7 @@ export default function Vocabulary() {
                     ...languageContent,
                     [languageId]: '',
                 });
+                setDoRefresh(true);
             } else {
                 const errorData = await response.json();
                 setBackendError(errorData.errors[0].message);
@@ -166,9 +167,9 @@ export default function Vocabulary() {
             }
         };
         fetchData();
-        setIsLanguageAdded(false);
+        setDoRefresh(false);
 
-    }, [isLanguageAdded]);
+    }, [doRefresh]);
 
     const maxRows = Math.max(
         ...languages.map((language) => language?.name ? vocabulary?.data[language.name]?.length || 0 : 0)
