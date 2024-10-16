@@ -53,7 +53,9 @@ export class LanguageService {
                 this.repo.count({ where: { deletedAt: null, userId } }),
             ]);
 
-            return [languages, count];
+            const sortedLanguages = languages.sort((a, b) => (b.isNative ? 1 : 0) - (a.isNative ? 1 : 0));
+
+            return [sortedLanguages, count];
         } catch (error) {
             console.error(error);
             throw error;
