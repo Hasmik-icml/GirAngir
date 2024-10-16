@@ -108,7 +108,6 @@ export default function Vocabulary() {
         setBackendError('');
     };
 
-
     const handleKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>, languageId: string,) => {
         if (e.key === 'Enter') {
             e.preventDefault();
@@ -135,6 +134,10 @@ export default function Vocabulary() {
                 setBackendError(errorData.errors[0].message);
             }
         }
+    };
+
+    const handleManageTranslation = () => {
+        setManageTranslations(!manageTranslations);
     };
 
     useEffect(() => {
@@ -287,8 +290,13 @@ export default function Vocabulary() {
                                                     <div className="flex items-center">
                                                         {language?.content ? (
                                                             <>
-                                                                <input type="checkbox" className="mr-2" />
-                                                                {language?.content}
+                                                                {manageTranslations ?
+                                                                    <>
+                                                                        <input type="checkbox" className="mr-2" />
+                                                                        <span className="text-gray-400">{language?.content}</span>
+                                                                    </> :
+                                                                    <span className="text-gray-500">{language?.content}</span>
+                                                                }
                                                             </>
                                                         ) : ''
                                                         }
@@ -338,12 +346,16 @@ export default function Vocabulary() {
                                                 <div className="flex items-center">
                                                     {content ? (
                                                         <>
-                                                            <input type="checkbox" className="mr-2" />
-                                                            {content}
+                                                            {manageTranslations ?
+                                                                <>
+                                                                    <input type="checkbox" className="mr-2" />
+                                                                    <span className="text-gray-400">{content}</span>
+                                                                </> :
+                                                                <span className="text-gray-500">{content}</span>
+                                                            }
                                                         </>
                                                     ) : ''
                                                     }
-
                                                 </div>
                                             </td>
                                         )
