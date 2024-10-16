@@ -1,6 +1,8 @@
 import { Language, Prisma, PrismaClient, Vocabulary } from '@prisma/client';
 import { TranslationPairs } from '../helpers/translation-pairs.helper';
 import { NotFoundError } from '../handlers/not-found.handler';
+import { BadRequestError } from '../handlers/bad-request.handler';
+import { CustomError } from '../errors/custom.error';
 
 export interface IOrderParams {
     orderField: string;
@@ -37,8 +39,14 @@ export class VocabularyService {
             })
             return data;
         } catch (error) {
-            throw error;
-        }
+            if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
+                throw new BadRequestError('Content already exists');
+            }
+
+            if (!(error instanceof CustomError)) {
+                throw new BadRequestError('Error creating content');
+            }
+            throw error;        }
     }
 
     public static async translation(contentIds: string[], userId: string): Promise<string[]> {
@@ -54,7 +62,7 @@ export class VocabularyService {
                     contentToId: true,
                 }
             })).map(pairs => [pairs.id, pairs.contentFromId, pairs.contentToId]);
-            
+
             const newPairs = TranslationPairs.newPairs(contentIds);
             const pairsToRemove = TranslationPairs.pairsToRemove(newPairs, existingPairs);
             const pairsToCreate = TranslationPairs.pairsToCreate(newPairs, existingPairs);
@@ -107,8 +115,8 @@ export class VocabularyService {
         try {
             [data, count] = await this.prismaClient.$transaction([
                 this.repo.findMany({
-                    skip,
-                    take: limit,
+                    // skip,
+                    // take: limit,
                     where,
                     orderBy: { [orderFiled]: order },
                     include: {
@@ -121,7 +129,6 @@ export class VocabularyService {
                     where
                 })
             ]);
-
 
             const groupedByLanguage = data.reduce((acc: { [key: string]: Vocabulary[] }, item) => {
                 const languageName = item.language.name;
