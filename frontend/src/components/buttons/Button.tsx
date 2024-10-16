@@ -10,8 +10,8 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 export default function Button({ children, size = 'large', color, ...props }: ButtonProps) {
     const sizeClasses = {
         small: 'py-2 px-3 text-xm w-auto',
-        medium: 'py-3 px-4 text-sm w-auto',
-        'fixed-medium': 'py-3 px-4 text-sm w-[200px]',
+        medium: 'py-2 px-4 text-sm w-auto',
+        'fixed-medium': 'py-2 px-4 text-sm w-[200px]',
         large: '',
     };
 

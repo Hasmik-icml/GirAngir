@@ -206,7 +206,7 @@ export default function Vocabulary() {
         <div className="table-container max-w-full overflow-x-auto">
             {/* Tools */}
             <div className={`${manageTranslations ? 'opacity-50' : 'opacity-100'} flex justify-between items-center mb-4 p-4 bg-gray-100 border rounded-md`}>
-                <Button type="submit" size="small" color='gray' onClick={manageTranslations ? () => alertMessage("Please complete the editing!") : toggleAddLanguageModal}> + </Button>
+                <Button type="submit" size="small" color='gray' onClick={manageTranslations ? () => alertMessage("Please complete the editing!") : toggleAddLanguageModal}> &#10010; </Button>
                 <Button type="submit" size="small" color='gray' onClick={manageTranslations ? () => alertMessage("Please complete the editing!") : toggleSettingsModal}> Settings </Button>
                 {showSettingsForm && (
                     <SettingsModal
@@ -217,11 +217,11 @@ export default function Vocabulary() {
                         doRefresh={handelRefresh}
                     />
                 )}
+                <Button type="submit" size="fixed-medium" color={manageTranslations ? "red" : "gray"} onClick={handleManageTranslation}> {manageTranslations ? "Save" : "Manage Translations"} </Button>
             </div>
             <ToastContainer />
 
             <div className="relative flex justify-between items-center mb-4 p-4 bg-gray-100 border rounded-md">
-                <Button type="submit" size="fixed-medium" color={manageTranslations ? "red" : "gray"} onClick={handleManageTranslation}> {manageTranslations ? "Save" : "Manage Translations"} </Button>
                 {backendError && (
                     <div className="absolute top-0 left-0 w-full bg-red-500 text-white p-2 rounded-md">
                         {backendError}
