@@ -272,8 +272,8 @@ export default function Vocabulary() {
             }
             {/* For small devices */}
             {/* Tabs for languages */}
-            <div className="block sm:hidden">
-                <ul className="flex justify-around border-b">
+            <div className="block sm:hidden overflow-x-auto">
+                <ul className="flex justify-around border-b whitespace-nowrap">
                     {languages.map((language) => (
                         <li key={language?.id}
                             className={`flex-1 p-2 ${activeTab === language?.id ? 'bg-slate-600 text-white' : 'text-gray-900 bg-gray-200'} rounded-t-lg border-l border-gray-300 ml-[3px]`}
