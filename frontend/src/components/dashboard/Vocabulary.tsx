@@ -5,6 +5,8 @@ import FormField from "../Form-Field";
 import { fetchWithAuth } from "../../utils/api";
 import { useNavigate } from "react-router-dom";
 import SettingsModal from "./SettingsModal";
+import { ToastContainer, toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 export interface ILanguage {
     id: string;
@@ -42,7 +44,19 @@ export default function Vocabulary() {
     const [doRefresh, setDoRefresh] = useState(false);
     const [isNative, setIsNative] = useState(false);
     const [backendError, setBackendError] = useState("");
+    const [manageTranslations, setManageTranslations] = useState(false);
+    const [highlightedItem, setHighlightedItem] = useState(false);
 
+    const alertMessage = (message: string) => {
+        toast.warning(message, {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+        });
+    };
 
     const history = useNavigate();
 
@@ -136,6 +150,11 @@ export default function Vocabulary() {
         }
     };
 
+    const handleShowRealationsOfContents = (e: React.MouseEvent<HTMLTableCellElement, MouseEvent>, languageId: string) => {
+        e.preventDefault();
+        console.log(e.target);
+    };
+
     const handleManageTranslation = () => {
         setManageTranslations(!manageTranslations);
     };
@@ -186,9 +205,9 @@ export default function Vocabulary() {
     return (
         <div className="table-container max-w-full overflow-x-auto">
             {/* Tools */}
-            <div className="flex justify-between items-center mb-4 p-4 bg-gray-100 border rounded-md">
-                <Button type="submit" size="small" color='gray' onClick={toggleAddLanguageModal}> + </Button>
-                <Button type="submit" size="small" color='gray' onClick={toggleSettingsModal}> Settings </Button>
+            <div className={`${manageTranslations ? 'opacity-50' : 'opacity-100'} flex justify-between items-center mb-4 p-4 bg-gray-100 border rounded-md`}>
+                <Button type="submit" size="small" color='gray' onClick={manageTranslations ? () => alertMessage("Please complete the editing!") : toggleAddLanguageModal}> + </Button>
+                <Button type="submit" size="small" color='gray' onClick={manageTranslations ? () => alertMessage("Please complete the editing!") : toggleSettingsModal}> Settings </Button>
                 {showSettingsForm && (
                     <SettingsModal
                         showForm={showSettingsForm}
@@ -199,7 +218,10 @@ export default function Vocabulary() {
                     />
                 )}
             </div>
+            <ToastContainer />
+
             <div className="relative flex justify-between items-center mb-4 p-4 bg-gray-100 border rounded-md">
+                <Button type="submit" size="medium" color={manageTranslations ? "red" : "gray"} onClick={handleManageTranslation}> {manageTranslations ? "Save" : "Manage Translations"} </Button>
                 {backendError && (
                     <div className="absolute top-0 left-0 w-full bg-red-500 text-white p-2 rounded-md">
                         {backendError}
@@ -269,8 +291,8 @@ export default function Vocabulary() {
                 {languages && languages.map((language) => (
                     activeTab === language?.id && (
                         <div key={language?.id} className="p-4 border rounded-md">
-                            <div className="flex justify-between items-center text-sm text-white px-4 py-2 bg-gray-300 cursor-pointer">
-                                {language?.name}: <span className="font-semibold">{vocabulary && vocabulary?.data[language?.name]?.length}</span>
+                            <div className="flex justify-between items-center text-sm text-white px-2 py-2 bg-gray-300 cursor-pointer">
+                                <span className="font-semibold text-slate-700">{language?.name}:  {vocabulary && vocabulary?.data[language?.name]?.length}</span>
                             </div>
                             <input
                                 type="text"
@@ -320,8 +342,8 @@ export default function Vocabulary() {
                                 {languages.length > 0 && languages.map((language) => (
                                     <>
                                         <td key={language?.id} className="border border-gray-300 px-2 py-1 hover:bg-gray-200 cursor-pointer min-w-[150px] sm:min-w-[100px] lg:min-w-[200px]">
-                                            <div className="flex justify-between text-sm text-white px-4 py-2 bg-gray-300">
-                                                {language?.name}: <span className="font-semibold">{vocabulary && vocabulary?.data[language?.name]?.length}</span>
+                                            <div className="flex justify-between text-sm text-white px-2 py-2 bg-gray-300">
+                                                <span className="font-semibold text-slate-700">{language?.name}:  {vocabulary && vocabulary?.data[language?.name]?.length}</span>
                                             </div>
                                             <input
                                                 type="text"
@@ -339,12 +361,18 @@ export default function Vocabulary() {
                         <tbody>
                             {Array.from({ length: maxRows }).map((_, rowIndex) => (
                                 <tr key={rowIndex}>
-                                    {languages.map((language) => {
+                                    {languages.map((language, colIndex) => {
                                         const content = vocabulary?.data[language?.name]?.[rowIndex]?.content;
                                         return (
-                                            <td key={language?.id} className="border border-gray-300 px-4 py-2 min-w-[150px] sm:min-w-[100px] lg:min-w-[200px]">
+                                            <td key={language?.id}
+                                                className={colIndex === 0 ?
+                                                    "border border-gray-300 px-4 py-2 cursor-pointer min-w-[150px] sm:min-w-[100px] lg:min-w-[200px]" :
+                                                    "border border-gray-300 px-4 py-2 min-w-[150px] sm:min-w-[100px] lg:min-w-[200px]"}
+                                                onClick={colIndex === 0 ? (e) => handleShowRealationsOfContents(e, language?.id) : undefined}
+                                            >
                                                 <div className="flex items-center">
                                                     {content ? (
+
                                                         <>
                                                             {manageTranslations ?
                                                                 <>
