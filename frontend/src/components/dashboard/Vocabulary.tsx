@@ -221,7 +221,7 @@ export default function Vocabulary() {
             <ToastContainer />
 
             <div className="relative flex justify-between items-center mb-4 p-4 bg-gray-100 border rounded-md">
-                <Button type="submit" size="medium" color={manageTranslations ? "red" : "gray"} onClick={handleManageTranslation}> {manageTranslations ? "Save" : "Manage Translations"} </Button>
+                <Button type="submit" size="fixed-medium" color={manageTranslations ? "red" : "gray"} onClick={handleManageTranslation}> {manageTranslations ? "Save" : "Manage Translations"} </Button>
                 {backendError && (
                     <div className="absolute top-0 left-0 w-full bg-red-500 text-white p-2 rounded-md">
                         {backendError}

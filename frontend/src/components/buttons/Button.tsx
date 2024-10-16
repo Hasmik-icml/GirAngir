@@ -3,7 +3,7 @@ import '../styles.css';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     children: React.ReactNode;
-    size?: 'small' | 'medium' | 'large';
+    size?: 'small' | 'medium' | 'large' | 'fixed-medium';
     color?: 'gray' | 'red';
 }
 
@@ -11,6 +11,7 @@ export default function Button({ children, size = 'large', color, ...props }: Bu
     const sizeClasses = {
         small: 'py-2 px-3 text-xm w-auto',
         medium: 'py-3 px-4 text-sm w-auto',
+        'fixed-medium': 'py-3 px-4 text-sm w-[200px]',
         large: '',
     };
 
@@ -20,7 +21,11 @@ export default function Button({ children, size = 'large', color, ...props }: Bu
     };
 
     return (
-        <button className={`${color === "red" ? "button-no-hover" : 'button'} ${sizeClasses[size]} ${color ? colorClasses[color] : ''}`} {...props}>
+        <button
+            className={`
+        ${color === "red" ? "button-no-hover" : 'button'} 
+        ${sizeClasses[size]} ${color ? colorClasses[color] : ''}`
+            } {...props}>
             {children}
         </button>
     );
