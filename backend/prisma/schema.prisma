@@ -58,7 +58,7 @@ model Vocabulary {
 
 model Language {
   id        String    @id @default(uuid())
-  name      String    @unique
+  name      String    
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
