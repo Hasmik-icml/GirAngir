@@ -45,6 +45,7 @@ export default function Vocabulary() {
     const [isNative, setIsNative] = useState(false);
     const [backendError, setBackendError] = useState("");
     const [manageTranslations, setManageTranslations] = useState(false);
+    const [showTranslation, setShowTranslation] = useState<string[]>([]);
     const [highlightedItem, setHighlightedItem] = useState(false);
 
     const alertMessage = (message: string) => {
@@ -150,9 +151,20 @@ export default function Vocabulary() {
         }
     };
 
-    const handleShowRealationsOfContents = (e: React.MouseEvent<HTMLTableCellElement, MouseEvent>, languageId: string) => {
+    const handleShowRealationsOfContents = async (e: React.MouseEvent<HTMLTableCellElement, MouseEvent>, nativeContentId?: string) => {
         e.preventDefault();
-        console.log(e.target);
+        const data = await fetchWithAuth(`${import.meta.env.VITE_API_URL}/vocabulary/${nativeContentId}`, {
+            method: "GET",
+        });
+        const ranslationData = await data.json();
+
+        const allIds = [ ...new Set(
+            ranslationData.data.flatMap((item: { contentFromId: string; contentToId: string; }) => [item.contentFromId, item.contentToId])
+        )] as string[];
+
+        console.log(allIds);
+        setShowTranslation(allIds);
+
     };
 
     const handleManageTranslation = () => {
@@ -363,12 +375,13 @@ export default function Vocabulary() {
                                 <tr key={rowIndex}>
                                     {languages.map((language, colIndex) => {
                                         const content = vocabulary?.data[language?.name]?.[rowIndex]?.content;
+                                        const nativeContentId = vocabulary?.data[language?.name]?.[rowIndex];
                                         return (
                                             <td key={language?.id}
                                                 className={colIndex === 0 ?
-                                                    "border border-gray-300 px-4 py-2 cursor-pointer min-w-[150px] sm:min-w-[100px] lg:min-w-[200px]" :
+                                                    "border border-gray-300 px-4 py-2 cursor-pointer hover:bg-gray-300 min-w-[150px] sm:min-w-[100px] lg:min-w-[200px]" :
                                                     "border border-gray-300 px-4 py-2 min-w-[150px] sm:min-w-[100px] lg:min-w-[200px]"}
-                                                onClick={colIndex === 0 ? (e) => handleShowRealationsOfContents(e, language?.id) : undefined}
+                                                onClick={(colIndex === 0 && manageTranslations) ? (e) => handleShowRealationsOfContents(e, nativeContentId?.id) : undefined}
                                             >
                                                 <div className="flex items-center">
                                                     {content ? (
@@ -376,7 +389,7 @@ export default function Vocabulary() {
                                                         <>
                                                             {manageTranslations ?
                                                                 <>
-                                                                    <input type="checkbox" className="mr-2" />
+                                                                    <input type="checkbox" className="mr-2" checked={showTranslation ? showTranslation.includes(nativeContentId?.id || '') : false} />
                                                                     <span className="text-gray-400">{content}</span>
                                                                 </> :
                                                                 <span className="text-gray-500">{content}</span>

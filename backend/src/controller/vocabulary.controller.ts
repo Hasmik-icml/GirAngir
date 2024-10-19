@@ -52,6 +52,17 @@ export class VocabularyController {
         }
     }
 
+    public static async getById(req: Request, res: Response): Promise<void> {
+        const userId = (req as any).userId;
+        const id = req.params.id;
+        try {
+            const [data, count] = await VocabularyService.findOne(id, userId);
+            res.status(200).send({ data, count });
+        } catch (error) {
+            res.status(500).json({ error: 'Error fetching contents' });
+        }
+    }
+
     public static async updateContent(req: Request, res: Response): Promise<void> {
         const { content } = req.body;
         const { contentId } = req.params;

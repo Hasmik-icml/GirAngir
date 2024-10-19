@@ -44,6 +44,10 @@ router
         validateRequest,
         VocabularyController.getAllContents
     )
+    .get('/:id',
+        validateRequest,
+        VocabularyController.getById
+    )
     .put("/edit/:contentId",
         [
             body("content")

@@ -1,4 +1,4 @@
-import { Language, Prisma, PrismaClient, Vocabulary } from '@prisma/client';
+import { Language, Prisma, PrismaClient, Translation, Vocabulary } from '@prisma/client';
 import { TranslationPairs } from '../helpers/translation-pairs.helper';
 import { NotFoundError } from '../handlers/not-found.handler';
 import { BadRequestError } from '../handlers/bad-request.handler';
@@ -46,7 +46,8 @@ export class VocabularyService {
             if (!(error instanceof CustomError)) {
                 throw new BadRequestError('Error creating content');
             }
-            throw error;        }
+            throw error;
+        }
     }
 
     public static async translation(contentIds: string[], userId: string): Promise<string[]> {
@@ -149,6 +150,40 @@ export class VocabularyService {
             return [groupedByLanguage, count];
         } catch (error) {
             console.log('error', error);
+            throw error;
+        }
+    }
+
+    public static async findOne(id: string, userId: string): Promise<[data: Translation[], count: number]> {
+        try {
+            let [data, count]: [data: Translation[], count: number] = [[], 0];
+
+            [data, count] = await this.prismaClient.$transaction([
+                this.translationRepo.findMany({
+                    where: {
+                        OR: [
+                            { contentFromId: id, userId },
+                            { contentToId: id, userId }
+                        ],
+                        deletedAt: null
+                    },
+                    // include: {
+                    //     contentFrom: true,
+                    //     contentTo: true,
+                    // }
+                }),
+                this.translationRepo.count({
+                    where: {
+                        OR: [
+                            { contentFromId: id, userId },
+                            { contentToId: id, userId }
+                        ],
+                        deletedAt: null
+                    },
+                })
+            ]);
+            return [data, count];
+        } catch (error) {
             throw error;
         }
     }
